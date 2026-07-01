@@ -831,6 +831,9 @@ export default function App() {
                     if (tab.id === "certificates") {
                       return isSuper || !settings?.isCertificateFeatureDisabled;
                     }
+                    if (tab.id === "attendance") {
+                      return (settings?.durationDays || 3) > 1;
+                    }
                     return true;
                   }).map((tab) => {
                     const Icon = tab.icon;

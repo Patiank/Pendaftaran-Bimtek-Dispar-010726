@@ -3772,33 +3772,35 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 </div>
 
                 {/* Reset Data Section */}
-                <div className="max-w-xl bg-red-950/20 border border-red-500/20 p-6 rounded-2xl animate-fade-in space-y-4 text-slate-200">
-                  <div className="flex items-start space-x-3">
-                    <Database className="w-5 h-5 text-red-400 mt-0.5 shrink-0" />
-                    <div>
-                      <h4 className="text-sm font-bold text-red-400 uppercase tracking-wider">
-                        Atur Ulang Data (Reset untuk Bimtek Baru)
-                      </h4>
-                      <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
-                        Aksi ini akan menghapus secara permanen semua data pendaftar peserta, foto kartu identitas (KTP), tanda tangan digital, dan seluruh berkas kehadiran saat ini. Pengaturan nama dan waktu kegiatan dapat disesuaikan kembali di atas.
+                {isSuperAdmin && (
+                  <div className="max-w-xl bg-red-950/20 border border-red-500/20 p-6 rounded-2xl animate-fade-in space-y-4 text-slate-200">
+                    <div className="flex items-start space-x-3">
+                      <Database className="w-5 h-5 text-red-400 mt-0.5 shrink-0" />
+                      <div>
+                        <h4 className="text-sm font-bold text-red-400 uppercase tracking-wider">
+                          Atur Ulang Data (Reset untuk Bimtek Baru)
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-1.5 leading-relaxed">
+                          Aksi ini akan menghapus secara permanen semua data pendaftar peserta, foto kartu identitas (KTP), tanda tangan digital, dan seluruh berkas kehadiran saat ini. Pengaturan nama dan waktu kegiatan dapat disesuaikan kembali di atas.
+                        </p>
+                      </div>
+                    </div>
+  
+                    <div className="pt-2">
+                      <button
+                        type="button"
+                        onClick={() => setShowResetConfirm(true)}
+                        className="py-3 px-5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white font-extrabold transition-all text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto cursor-pointer"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                        <span>Kosongkan Semua Data & Mulai Bimtek Baru</span>
+                      </button>
+                      <p className="text-[10px] text-red-400/90 mt-2 font-medium italic">
+                        *...perintah ini mereset semua bimtek dan database secara permanen.
                       </p>
                     </div>
                   </div>
-
-                  <div className="pt-2">
-                    <button
-                      type="button"
-                      onClick={() => setShowResetConfirm(true)}
-                      className="py-3 px-5 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white font-extrabold transition-all text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-md w-full sm:w-auto cursor-pointer"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      <span>Kosongkan Semua Data & Mulai Bimtek Baru</span>
-                    </button>
-                    <p className="text-[10px] text-red-400/90 mt-2 font-medium italic">
-                      *...perintah ini mereset semua bimtek dan database secara permanen.
-                    </p>
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </motion.div>
