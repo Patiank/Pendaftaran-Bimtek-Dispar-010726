@@ -814,6 +814,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [singlePdfStatus, setSinglePdfStatus] = useState("");
   const [isCallingScreenActive, setIsCallingScreenActive] = useState(false);
   const [callingScreenCurrentIdx, setCallingScreenCurrentIdx] = useState(0);
+  const [registrantsPage, setRegistrantsPage] = useState(0);
+  const [attendancePage, setAttendancePage] = useState(0);
+  const [allowancePage, setAllowancePage] = useState(0);
+  const REGISTRANTS_PER_PAGE = 10;
 
   const formatIndonesianDate = (dateStr: string, offsetDays: number = 0) => {
     try {
@@ -2076,7 +2080,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     type="text"
                     placeholder="Saring berdasarkan nama, NIK, No. HP, kabupaten/kota..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setRegistrantsPage(0);
+                    }}
                     className="bg-transparent border-none text-white focus:outline-none text-xs sm:text-sm w-full"
                   />
                 </div>
@@ -2103,94 +2110,122 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           </td>
                         </tr>
                       ) : (
-                        filteredRegistrants.map((reg, idx) => {
+                        filteredRegistrants.slice(registrantsPage * REGISTRANTS_PER_PAGE, (registrantsPage + 1) * REGISTRANTS_PER_PAGE).map((reg, idx) => {
                           const globalIdx = registrations.findIndex(r => r.id === reg.id);
                           return (
                             <tr key={`reglist-${reg.id}-${idx}`} className="hover:bg-slate-800/30 text-white">
                               <td className="p-4 font-mono text-slate-500">{globalIdx + 1}</td>
-                            <td className="p-4">
-                              <div className="font-bold text-slate-100">{reg.name.toUpperCase()}</div>
-                            </td>
-                            <td className="p-4 font-mono">{reg.nik}</td>
-                            <td className="p-4 flex items-center space-x-1.5 font-semibold text-emerald-400">
-                              <Phone className="w-3.5 h-3.5 shrink-0" />
-                              <span>{reg.phone || "-"}</span>
-                            </td>
-                            <td className="p-4 text-slate-300 font-semibold">{reg.kabKota}</td>
-                            <td className="p-4 text-slate-400">
-                              {new Date(reg.registeredAt).toLocaleDateString("id-ID", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              })}
-                            </td>
-                            <td className="p-4 text-center flex items-center justify-center">
-                              {deleteRegConfirmId === reg.id ? (
-                                <div className="flex items-center space-x-1.5 bg-red-500/10 border border-red-500/20 p-1 rounded-lg">
-                                  <span className="text-[10px] text-red-400 font-bold px-1 uppercase tracking-wider">Hapus?</span>
-                                  <button
-                                    onClick={() => {
-                                      onDeleteRegistration(reg.id);
-                                      setDeleteRegConfirmId(null);
-                                    }}
-                                    className="bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] px-2 py-0.5 rounded transition-all uppercase animate-pulse"
-                                    title="Ya, Hapus Peserta"
-                                  >
-                                    Ya
-                                  </button>
-                                  <button
-                                    onClick={() => setDeleteRegConfirmId(null)}
-                                    className="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-[10px] px-2 py-0.5 rounded transition-all uppercase"
-                                    title="Batalkan"
-                                  >
-                                    Batal
-                                  </button>
-                                </div>
-                              ) : (
-                                <div className="flex items-center space-x-2">
-                                  <button
-                                    onClick={() => {
-                                      setSelectedParticipantForCard(reg);
-                                    }}
-                                    className="text-emerald-400 hover:text-emerald-300 p-1 bg-emerald-500/10 hover:bg-emerald-500/25 rounded transition-all inline-block"
-                                    title="Lihat Kartu"
-                                  >
-                                    <Eye className="w-4 h-4" />
-                                  </button>
-                                  {(!settings.isCertificateFeatureDisabled || isSuperAdmin) && (
+                              <td className="p-4">
+                                <div className="font-bold text-slate-100">{reg.name.toUpperCase()}</div>
+                              </td>
+                              <td className="p-4 font-mono">{reg.nik}</td>
+                              <td className="p-4 flex items-center space-x-1.5 font-semibold text-emerald-400">
+                                <Phone className="w-3.5 h-3.5 shrink-0" />
+                                <span>{reg.phone || "-"}</span>
+                              </td>
+                              <td className="p-4 text-slate-300 font-semibold">{reg.kabKota}</td>
+                              <td className="p-4 text-slate-400">
+                                {new Date(reg.registeredAt).toLocaleDateString("id-ID", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </td>
+                              <td className="p-4 text-center flex items-center justify-center">
+                                {deleteRegConfirmId === reg.id ? (
+                                  <div className="flex items-center space-x-1.5 bg-red-500/10 border border-red-500/20 p-1 rounded-lg">
+                                    <span className="text-[10px] text-red-400 font-bold px-1 uppercase tracking-wider">Hapus?</span>
                                     <button
                                       onClick={() => {
-                                        openCertificateModal(reg);
+                                        onDeleteRegistration(reg.id);
+                                        setDeleteRegConfirmId(null);
                                       }}
-                                      className={`p-1 rounded transition-all inline-block ${
-                                        (settings.isCertificateReleased || reg.isCertificateSent || reg.certificateBase64)
-                                          ? "text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/25 animate-pulse"
-                                          : "text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/25"
-                                      }`}
-                                      title={(settings.isCertificateReleased || reg.isCertificateSent || reg.certificateBase64) ? "Unduh / Cetak Sertifikat Resmi" : "View / Pratinjau Sertifikat Peserta (Draft)"}
+                                      className="bg-red-600 hover:bg-red-500 text-white font-bold text-[10px] px-2 py-0.5 rounded transition-all uppercase animate-pulse"
+                                      title="Ya, Hapus Peserta"
                                     >
-                                      <Award className="w-4 h-4" />
+                                      Ya
                                     </button>
-                                  )}
-                                  <button
-                                    onClick={() => {
-                                      setDeleteRegConfirmId(reg.id);
-                                    }}
-                                    className="text-red-400 hover:text-red-300 p-1 bg-red-500/10 hover:bg-red-500/25 rounded transition-all inline-block"
-                                    title="Hapus"
-                                  >
-                                    <Trash2 className="w-4 h-4" />
-                                  </button>
-                                </div>
-                              )}
-                            </td>
-                          </tr>
-                        );
-                      })
+                                    <button
+                                      onClick={() => setDeleteRegConfirmId(null)}
+                                      className="bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold text-[10px] px-2 py-0.5 rounded transition-all uppercase"
+                                      title="Batalkan"
+                                    >
+                                      Batal
+                                    </button>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center space-x-2">
+                                    <button
+                                      onClick={() => {
+                                        setSelectedParticipantForCard(reg);
+                                      }}
+                                      className="text-emerald-400 hover:text-emerald-300 p-1 bg-emerald-500/10 hover:bg-emerald-500/25 rounded transition-all inline-block"
+                                      title="Lihat Kartu"
+                                    >
+                                      <Eye className="w-4 h-4" />
+                                    </button>
+                                    {(!settings.isCertificateFeatureDisabled || isSuperAdmin) && (
+                                      <button
+                                        onClick={() => {
+                                          openCertificateModal(reg);
+                                        }}
+                                        className={`p-1 rounded transition-all inline-block ${
+                                          (settings.isCertificateReleased || reg.isCertificateSent || reg.certificateBase64)
+                                            ? "text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/25 animate-pulse"
+                                            : "text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/25"
+                                        }`}
+                                        title={(settings.isCertificateReleased || reg.isCertificateSent || reg.certificateBase64) ? "Unduh / Cetak Sertifikat Resmi" : "View / Pratinjau Sertifikat Peserta (Draft)"}
+                                      >
+                                        <Award className="w-4 h-4" />
+                                      </button>
+                                    )}
+                                    <button
+                                      onClick={() => {
+                                        setDeleteRegConfirmId(reg.id);
+                                      }}
+                                      className="text-red-400 hover:text-red-300 p-1 bg-red-500/10 hover:bg-red-500/25 rounded transition-all inline-block"
+                                      title="Hapus"
+                                    >
+                                      <Trash2 className="w-4 h-4" />
+                                    </button>
+                                  </div>
+                                )}
+                              </td>
+                            </tr>
+                          );
+                        })
                       )}
                     </tbody>
                   </table>
                 </div>
+
+                {/* Pagination Controls */}
+                {filteredRegistrants.length > REGISTRANTS_PER_PAGE && (
+                  <div className="flex justify-between items-center bg-slate-800/30 border border-white/5 p-3 rounded-xl">
+                    <span className="text-xs text-slate-400">
+                      Menampilkan {registrantsPage * REGISTRANTS_PER_PAGE + 1} - {Math.min((registrantsPage + 1) * REGISTRANTS_PER_PAGE, filteredRegistrants.length)} dari {filteredRegistrants.length} data pendaftar
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setRegistrantsPage(p => Math.max(0, p - 1))}
+                        disabled={registrantsPage === 0}
+                        className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-xs font-bold text-white px-2">
+                        Hal {registrantsPage + 1} dari {Math.ceil(filteredRegistrants.length / REGISTRANTS_PER_PAGE)}
+                      </span>
+                      <button
+                        onClick={() => setRegistrantsPage(p => Math.min(Math.ceil(filteredRegistrants.length / REGISTRANTS_PER_PAGE) - 1, p + 1))}
+                        disabled={registrantsPage >= Math.ceil(filteredRegistrants.length / REGISTRANTS_PER_PAGE) - 1}
+                        className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-all"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Total participants info at the bottom of the table */}
                 <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-800/20 border border-white/5 p-4 rounded-xl text-xs text-slate-300 font-medium">
@@ -2237,7 +2272,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     type="text"
                     placeholder="Saring berdasarkan nama, NIK, No. HP, dll..."
                     value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setAttendancePage(0);
+                    }}
                     className="bg-transparent border-none text-white focus:outline-none text-xs sm:text-sm w-full"
                   />
                 </div>
@@ -2267,7 +2305,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           </td>
                         </tr>
                       ) : (
-                        filteredRegistrants.map((reg, idx) => {
+                        filteredRegistrants.slice(attendancePage * REGISTRANTS_PER_PAGE, (attendancePage + 1) * REGISTRANTS_PER_PAGE).map((reg, idx) => {
                           const globalIdx = registrations.findIndex(r => r.id === reg.id);
                           return (
                             <tr key={`att-reg-row-${reg.id}`} className="hover:bg-slate-800/30 text-white">
@@ -2333,6 +2371,34 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </table>
                 </div>
 
+                {/* Pagination Controls for Attendance */}
+                {filteredRegistrants.length > REGISTRANTS_PER_PAGE && (
+                  <div className="flex justify-between items-center bg-slate-800/30 border border-white/5 p-3 rounded-xl">
+                    <span className="text-xs text-slate-400">
+                      Menampilkan {attendancePage * REGISTRANTS_PER_PAGE + 1} - {Math.min((attendancePage + 1) * REGISTRANTS_PER_PAGE, filteredRegistrants.length)} dari {filteredRegistrants.length} data peserta
+                    </span>
+                    <div className="flex items-center space-x-2">
+                      <button
+                        onClick={() => setAttendancePage(p => Math.max(0, p - 1))}
+                        disabled={attendancePage === 0}
+                        className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </button>
+                      <span className="text-xs font-bold text-white px-2">
+                        Hal {attendancePage + 1} dari {Math.ceil(filteredRegistrants.length / REGISTRANTS_PER_PAGE)}
+                      </span>
+                      <button
+                        onClick={() => setAttendancePage(p => Math.min(Math.ceil(filteredRegistrants.length / REGISTRANTS_PER_PAGE) - 1, p + 1))}
+                        disabled={attendancePage >= Math.ceil(filteredRegistrants.length / REGISTRANTS_PER_PAGE) - 1}
+                        className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-all"
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Total attendance info at the bottom of the table */}
                 <div className="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-800/20 border border-white/5 p-4 rounded-xl text-xs text-slate-300 font-medium">
                   <div className="flex items-center space-x-2">
@@ -2392,7 +2458,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       type="text"
                       placeholder="Cari penerima berdasarkan nama/NIK..."
                       value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onChange={(e) => {
+                        setSearchQuery(e.target.value);
+                        setAllowancePage(0);
+                      }}
                       className="w-full pl-9 pr-4 py-2 bg-slate-900 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 text-xs text-white"
                     />
                   </div>
@@ -2421,7 +2490,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                             <td colSpan={6} className="p-12 text-center text-slate-500 font-medium italic">Tidak ada data pendaftar yang cocok dengan pencarian.</td>
                           </tr>
                         ) : (
-                          registrations.filter(r => (r.name || "").toLowerCase().includes((searchQuery || "").toLowerCase()) || (r.nik || "").includes(searchQuery || "")).map((reg, idx) => {
+                          registrations.filter(r => (r.name || "").toLowerCase().includes((searchQuery || "").toLowerCase()) || (r.nik || "").includes(searchQuery || ""))
+                          .slice(allowancePage * REGISTRANTS_PER_PAGE, (allowancePage + 1) * REGISTRANTS_PER_PAGE)
+                          .map((reg, idx) => {
                             const globalIdx = registrations.findIndex(r => r.id === reg.id);
                             return (
                               <tr key={`reggallow-${reg.id}-${idx}`} className="border-b border-white/5 hover:bg-white/5 transition-all">
@@ -2449,6 +2520,39 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </table>
                   </div>
                 </div>
+
+                {/* Pagination Controls for Allowance */}
+                {(() => {
+                  const allowanceFiltered = registrations.filter(r => (r.name || "").toLowerCase().includes((searchQuery || "").toLowerCase()) || (r.nik || "").includes(searchQuery || ""));
+                  if (allowanceFiltered.length <= REGISTRANTS_PER_PAGE) return null;
+                  
+                  return (
+                    <div className="flex justify-between items-center bg-slate-800/30 border border-white/5 p-3 rounded-xl">
+                      <span className="text-xs text-slate-400">
+                        Menampilkan {allowancePage * REGISTRANTS_PER_PAGE + 1} - {Math.min((allowancePage + 1) * REGISTRANTS_PER_PAGE, allowanceFiltered.length)} dari {allowanceFiltered.length} data pendaftar
+                      </span>
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => setAllowancePage(p => Math.max(0, p - 1))}
+                          disabled={allowancePage === 0}
+                          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-all"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <span className="text-xs font-bold text-white px-2">
+                          Hal {allowancePage + 1} dari {Math.ceil(allowanceFiltered.length / REGISTRANTS_PER_PAGE)}
+                        </span>
+                        <button
+                          onClick={() => setAllowancePage(p => Math.min(Math.ceil(allowanceFiltered.length / REGISTRANTS_PER_PAGE) - 1, p + 1))}
+                          disabled={allowancePage >= Math.ceil(allowanceFiltered.length / REGISTRANTS_PER_PAGE) - 1}
+                          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 disabled:opacity-50 disabled:cursor-not-allowed text-white text-xs font-bold rounded-lg transition-all"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
             )}
 
