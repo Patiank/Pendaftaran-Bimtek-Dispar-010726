@@ -1327,6 +1327,64 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     );
   });
 
+  const playBeep = () => {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      const playTone = (freq: number, startTime: number, duration: number) => {
+        const oscillator = audioCtx.createOscillator();
+        const gainNode = audioCtx.createGain();
+        
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(freq, startTime);
+        
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(0.8, startTime + 0.05);
+        gainNode.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioCtx.destination);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
+
+      const now = audioCtx.currentTime;
+      playTone(659.25, now, 0.6);       // E5 (Ding)
+      playTone(523.25, now + 0.5, 1.0); // C5 (Dong)
+      
+    } catch (e) {
+      console.warn('Audio play failed', e);
+    }
+  };
+
+  useEffect(() => {
+    if (!isCallingScreenActive) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") {
+        setCallingScreenCurrentIdx(prev => {
+          if (prev < registrations.length - 1) {
+            playBeep();
+            return prev + 1;
+          }
+          return prev;
+        });
+      } else if (e.key === "ArrowLeft") {
+        setCallingScreenCurrentIdx(prev => {
+          if (prev > 0) {
+            playBeep();
+            return prev - 1;
+          }
+          return prev;
+        });
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isCallingScreenActive, registrations.length]);
+
   if (!isAuthorized) {
     return (
       <div className="w-full max-w-sm mx-auto bg-white rounded-2xl border border-slate-100 p-6 shadow-xl my-6 animate-fade-in">
@@ -1400,14 +1458,26 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 ANTRIAN {callingScreenCurrentIdx + 1} DARI {registrations.length}
               </span>
               <button
-                onClick={() => setCallingScreenCurrentIdx(prev => Math.max(0, prev - 1))}
+                onClick={() => setCallingScreenCurrentIdx(prev => {
+                  if (prev > 0) {
+                    playBeep();
+                    return prev - 1;
+                  }
+                  return prev;
+                })}
                 disabled={callingScreenCurrentIdx === 0}
                 className="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-all shadow-md active:scale-95"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
-                onClick={() => setCallingScreenCurrentIdx(prev => Math.min(registrations.length - 1, prev + 1))}
+                onClick={() => setCallingScreenCurrentIdx(prev => {
+                  if (prev < registrations.length - 1) {
+                    playBeep();
+                    return prev + 1;
+                  }
+                  return prev;
+                })}
                 disabled={callingScreenCurrentIdx === registrations.length - 1}
                 className="p-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-all shadow-md active:scale-95 shadow-indigo-900/50"
               >
@@ -1451,7 +1521,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
             {registrations.length > 0 ? (
               <div className="relative z-10 w-full max-w-7xl mx-auto animate-fade-in flex flex-col items-center">
                 <div className="mb-12">
-                   <h2 className="text-3xl md:text-4xl font-black text-slate-500 tracking-[0.2em] uppercase mb-4">Panggilan Penerimaan</h2>
+                   <h2 className="text-3xl md:text-4xl font-black text-slate-500 tracking-[0.2em] uppercase mb-4">Panggilan</h2>
                    <h3 className="text-xl md:text-2xl text-indigo-400/80 font-bold tracking-wider">{settings.eventTitle}</h3>
                 </div>
                 
