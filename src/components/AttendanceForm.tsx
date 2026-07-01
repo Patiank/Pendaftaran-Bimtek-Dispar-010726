@@ -28,24 +28,24 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
   // Check if value matches registered NIK OR No. HP/WhatsApp OR Name
   useEffect(() => {
     const cleanVal = inputValue.trim();
+    let newParticipant = null;
+    
     if (cleanVal.length >= 3) {
-      const match = registrations.find((reg) => {
+      newParticipant = registrations.find((reg) => {
         const cleanValDigits = cleanVal.replace(/\D/g, "");
         const matchNik = reg.nik && cleanValDigits !== "" && reg.nik.replace(/\D/g, "").includes(cleanValDigits);
         const matchPhone = reg.phone && cleanValDigits !== "" && reg.phone.replace(/[^0-9]/g, "").includes(cleanValDigits);
         const matchName = reg.name && reg.name.toLowerCase().includes(cleanVal.toLowerCase());
         return matchNik || matchPhone || matchName;
-      });
-      if (match) {
-        setParticipant(match);
-        setErrorText("");
-      } else {
-        setParticipant(null);
-      }
-    } else {
-      setParticipant(null);
-      setErrorText("");
+      }) || null;
     }
+    
+    if (newParticipant?.id !== participant?.id) {
+       clearCanvas();
+       setErrorText("");
+    }
+    setParticipant(newParticipant);
+    
   }, [inputValue, registrations]);
 
   // Handle HTML5 Canvas Drawing operations

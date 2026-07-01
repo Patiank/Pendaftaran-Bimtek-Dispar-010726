@@ -23,7 +23,11 @@ import {
   LogOut,
   Sparkles,
   MapPin,
-  Award
+  Award,
+  MonitorPlay,
+  ChevronRight,
+  ChevronLeft,
+  Maximize
 } from "lucide-react";
 import { Registration, Attendance, AppSettings } from "../types";
 import { ParticipantCard } from "./ParticipantCard";
@@ -808,6 +812,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [isResetting, setIsResetting] = useState(false);
   const [pdfStatus, setPdfStatus] = useState("");
   const [singlePdfStatus, setSinglePdfStatus] = useState("");
+  const [isCallingScreenActive, setIsCallingScreenActive] = useState(false);
+  const [callingScreenCurrentIdx, setCallingScreenCurrentIdx] = useState(0);
 
   const formatIndonesianDate = (dateStr: string, offsetDays: number = 0) => {
     try {
@@ -1375,6 +1381,112 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   return (
     <div className="w-full max-w-7xl mx-auto space-y-6">
+      {/* CALLING SCREEN OVERLAY */}
+      {isCallingScreenActive && (
+        <div className="fixed inset-0 z-[99999] bg-slate-950 flex flex-col font-sans">
+          {/* Top Control Bar */}
+          <div className="h-20 border-b border-slate-800 bg-slate-900 flex items-center justify-between px-6 shrink-0">
+            <div className="flex items-center space-x-3 text-indigo-400">
+              <MonitorPlay className="w-6 h-6" />
+              <span className="font-black tracking-widest uppercase text-lg hidden sm:block">Mode Layar Panggil</span>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <span className="text-slate-400 text-base font-bold mr-4 font-mono">
+                ANTRIAN {callingScreenCurrentIdx + 1} DARI {registrations.length}
+              </span>
+              <button
+                onClick={() => setCallingScreenCurrentIdx(prev => Math.max(0, prev - 1))}
+                disabled={callingScreenCurrentIdx === 0}
+                className="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-all shadow-md active:scale-95"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setCallingScreenCurrentIdx(prev => Math.min(registrations.length - 1, prev + 1))}
+                disabled={callingScreenCurrentIdx === registrations.length - 1}
+                className="p-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white transition-all shadow-md active:scale-95 shadow-indigo-900/50"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+              <div className="w-px h-8 bg-slate-700 mx-2"></div>
+              <button
+                onClick={() => {
+                   if (!document.fullscreenElement) {
+                     document.documentElement.requestFullscreen().catch(() => {});
+                   } else {
+                     document.exitFullscreen().catch(() => {});
+                   }
+                }}
+                className="p-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition-all shadow-md active:scale-95"
+                title="Toggle Full Screen"
+              >
+                <Maximize className="w-5 h-5" />
+              </button>
+              <button
+                onClick={() => {
+                   setIsCallingScreenActive(false);
+                   if (document.fullscreenElement) {
+                     document.exitFullscreen().catch(() => {});
+                   }
+                }}
+                className="px-6 py-3 bg-red-600 hover:bg-red-500 text-white text-sm font-black uppercase tracking-wider rounded-xl transition-all shadow-md active:scale-95"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+
+          {/* Main Display Area */}
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center relative overflow-hidden bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-slate-950">
+            {/* Background decoration */}
+            <div className="absolute inset-0 flex items-center justify-center opacity-[0.02] pointer-events-none">
+               <Award className="w-[800px] h-[800px]" />
+            </div>
+            
+            {registrations.length > 0 ? (
+              <div className="relative z-10 w-full max-w-7xl mx-auto animate-fade-in flex flex-col items-center">
+                <div className="mb-12">
+                   <h2 className="text-3xl md:text-4xl font-black text-slate-500 tracking-[0.2em] uppercase mb-4">Panggilan Penerimaan</h2>
+                   <h3 className="text-xl md:text-2xl text-indigo-400/80 font-bold tracking-wider">{settings.eventTitle}</h3>
+                </div>
+                
+                <div className="bg-slate-900/60 border border-slate-700/50 rounded-[3rem] p-12 md:p-24 w-full shadow-2xl backdrop-blur-xl relative overflow-hidden">
+                  <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-500"></div>
+                  <div className="flex flex-col items-center gap-10">
+                     <div className="w-40 h-40 md:w-56 md:h-56 rounded-full bg-indigo-900/40 border-4 border-indigo-500 flex items-center justify-center shadow-[0_0_80px_rgba(99,102,241,0.2)]">
+                        <span className="text-7xl md:text-9xl font-black text-indigo-300 font-mono tracking-tighter">
+                          {callingScreenCurrentIdx + 1}
+                        </span>
+                     </div>
+                     
+                     <div className="space-y-6 w-full mt-4">
+                        <h1 className="text-5xl md:text-7xl lg:text-8xl font-black text-white uppercase tracking-tight leading-[1.1] break-words drop-shadow-lg">
+                          {registrations[callingScreenCurrentIdx]?.name || "-"}
+                        </h1>
+                        <p className="text-2xl md:text-4xl text-emerald-400 font-mono font-bold mt-8 tracking-widest drop-shadow">
+                          NIK: {registrations[callingScreenCurrentIdx]?.nik || "-"}
+                        </p>
+                        <div className="inline-block bg-slate-800/80 rounded-2xl px-8 py-4 mt-6 border border-slate-700">
+                          <p className="text-xl md:text-3xl text-slate-300 font-bold uppercase tracking-wide">
+                            {registrations[callingScreenCurrentIdx]?.kabKota || "TIDAK ADA DATA INSTANSI"}
+                          </p>
+                        </div>
+                     </div>
+                  </div>
+                </div>
+                
+                <div className="mt-16 text-slate-400 text-xl md:text-2xl font-bold tracking-widest uppercase animate-pulse">
+                  Silahkan Menuju Meja Panitia
+                </div>
+              </div>
+            ) : (
+              <div className="text-3xl text-slate-500 font-bold">Tidak ada data peserta terdaftar.</div>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* EXPLICIT BLACK-AND-WHITE PRINT LAYOUT & PRINTER PREVIEW WITH EXCELLENT CONTROL PANEL */}
       {isPrintLayoutActive && (
         <div className="fixed inset-0 bg-white z-[99999] overflow-y-auto pt-24 pb-12 px-4 sm:px-12 text-black print:p-0 print:pt-0">
@@ -1692,7 +1804,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               {/* Render empty cells for physical signing by participants as requested */}
                                 {Array.from({ length: settings.durationDays || 3 }).map((_, i) => {
                                   const dayAtt = i > 0 ? attendance.find(a => 
-                                    (a.nik === reg.nik || a.name === reg.name) && a.day === i + 1
+                                    a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` || 
+                                    (reg.nik && a.nik === reg.nik && a.day === i + 1)
                                   ) : null;
                                   
                                   const sigSrc = i === 0 ? reg.signatureBase64 : dayAtt?.signatureBase64;
@@ -2165,7 +2278,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               </td>
                               {Array.from({ length: settings.durationDays || 3 }).map((_, i) => {
                                 const dayAtt = i > 0 ? attendance.find(a => 
-                                  (a.nik === reg.nik || a.name === reg.name) && a.day === i + 1
+                                  a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` || 
+                                  (reg.nik && a.nik === reg.nik && a.day === i + 1)
                                 ) : null;
                                 
                                 const sigSrc = i === 0 ? reg.signatureBase64 : dayAtt?.signatureBase64;
@@ -2247,6 +2361,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </div>
 
                   <div className="flex shrink-0 items-center space-x-2">
+                    <button
+                      onClick={() => {
+                        setIsCallingScreenActive(true);
+                        setCallingScreenCurrentIdx(0);
+                      }}
+                      className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-black rounded-xl transition-all shadow-md flex items-center space-x-1.5 active:scale-95 cursor-pointer"
+                    >
+                      <MonitorPlay className="w-4 h-4" />
+                      <span>Layar Panggil Antrian</span>
+                    </button>
                     <button
                       onClick={() => {
                         setPrintType("allowance");

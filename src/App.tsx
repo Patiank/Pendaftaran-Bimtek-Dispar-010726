@@ -638,7 +638,7 @@ export default function App() {
       year: "numeric"
     });
 
-    if (settings.durationDays && settings.durationDays > 1) {
+    if (settings.durationDays && (settings?.durationDays || 3) > 1) {
       const end = new Date(start);
       end.setDate(start.getDate() + (settings.durationDays - 1));
       const formattedEnd = end.toLocaleDateString("id-ID", {
@@ -809,7 +809,19 @@ export default function App() {
                   )}
                 </button>
 
-                {/* DYNAMIC ATTENDANCE MENU CHECKPOINT DISABLED (MANUAL ATTENDANCE VIA SIGN-IN SHEET) */}
+                {(settings?.durationDays || 3) > 1 && (
+                  <button
+                    onClick={() => handleTabChange("absent")}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                      activeTab === "absent"
+                        ? "bg-emerald-600 text-white shadow-xl shadow-emerald-600/10"
+                        : "text-gray-700 hover:bg-slate-50 hover:text-emerald-700"
+                    }`}
+                  >
+                    <CheckSquare className="w-4 h-4" />
+                    <span>Absensi Harian</span>
+                  </button>
+                )}
               </div>
 
               {/* NEW PANEL FOR ADMIN MENU - DISPLAYED ONLY WHEN ON ADMIN TAB & AUTHORIZED */}
@@ -900,7 +912,7 @@ export default function App() {
                     </div>
 
                     {/* Massive functional card grid */}
-                    <div className={`grid grid-cols-1 ${settings?.durationDays > 1 ? "md:grid-cols-3" : "md:grid-cols-2"} gap-6 max-w-5xl mx-auto`}>
+                    <div className={`grid grid-cols-1 ${(settings?.durationDays || 3) > 1 ? "md:grid-cols-3" : "md:grid-cols-2"} gap-6 max-w-5xl mx-auto`}>
                       {/* Card 1: Pendaftaran */}
                       <div 
                         onClick={() => handleTabChange("register")}
@@ -954,7 +966,7 @@ export default function App() {
                       </div>
 
                       {/* Card 3: Absensi Harian (Tampil jika > 1 hari) */}
-                      {settings?.durationDays > 1 && (
+                      {(settings?.durationDays || 3) > 1 && (
                         <div 
                           onClick={() => handleTabChange("absent")}
                           className="bg-white border-2 border-slate-100 hover:border-sky-500 rounded-3xl p-6 sm:p-8 cursor-pointer shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col justify-between group text-center"
@@ -1346,7 +1358,7 @@ export default function App() {
                 )}
 
                 {/* TAB: DAILY ATTENDANCE (Conditional rendering checkpoint) */}
-                {activeTab === "absent" && settings.durationDays > 1 && (
+                {activeTab === "absent" && (settings?.durationDays || 3) > 1 && (
                   <AttendanceForm
                     durationDays={settings.durationDays}
                     onAttendanceSubmit={handleAttendanceSubmit}
