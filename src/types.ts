@@ -16,6 +16,7 @@ export interface Registration {
   certificateFileType?: string;
   gender?: string;
   isCertificateSent?: boolean;
+  bankAccount?: string;
 }
 
 export interface Attendance {

@@ -1785,14 +1785,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         <th className="p-2 border border-black">NIK</th>
                         <th className="p-2 border border-black">Instansi / Kabupaten / Kota</th>
                         <th className="p-2 border border-black text-center font-bold">Jenis Kelamin</th>
-                        <th className="p-2 border border-black text-center w-36">Jumlah Penerimaan</th>
-                        <th className="p-2 border border-black w-48 text-center">Tanda Tangan Manual</th>
+                        <th className="p-2 border border-black text-center font-bold">No. Rekening</th>
+                        <th className="p-2 border border-black text-center w-32">Jumlah Penerimaan</th>
+                        <th className="p-2 border border-black w-36 text-center">Tanda Tangan Manual</th>
                       </tr>
                     </thead>
                     <tbody>
                       {registrations.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="p-4 text-center border border-black">Tidak ada data pendaftar.</td>
+                          <td colSpan={8} className="p-4 text-center border border-black">Tidak ada data pendaftar.</td>
                         </tr>
                       ) : (
                         registrations.map((reg, idx) => {
@@ -1805,6 +1806,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               <td className="p-2 border border-black">{reg.kabKota}</td>
                               <td className="p-2 border border-black text-center font-semibold align-middle">
                                 {reg.gender || "Laki-laki"}
+                              </td>
+                              <td className="p-2 border border-black font-mono text-center font-semibold align-middle">
+                                {reg.bankAccount ? `Bank Nagari - ${reg.bankAccount}` : "-"}
                               </td>
                               <td className="p-2 border border-black text-center font-bold">
                                 {currentAllowance !== 0 && currentAllowance !== undefined
@@ -2550,6 +2554,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                           <th className="p-4">Nama Lengkap</th>
                           <th className="p-4">NIK (KTP)</th>
                           <th className="p-4">Instansi / Kabupaten / Kota</th>
+                          <th className="p-4 text-center">No. Rekening</th>
                           <th className="p-4 text-center">Estimasi Penerimaan</th>
                           <th className="p-4 text-center">Kolom Tanda Tangan</th>
                         </tr>
@@ -2557,7 +2562,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                       <tbody>
                         {registrations.filter(r => (r.name || "").toLowerCase().includes((searchQuery || "").toLowerCase()) || (r.nik || "").includes(searchQuery || "")).length === 0 ? (
                           <tr>
-                            <td colSpan={6} className="p-12 text-center text-slate-500 font-medium italic">Tidak ada data pendaftar yang cocok dengan pencarian.</td>
+                            <td colSpan={7} className="p-12 text-center text-slate-500 font-medium italic">Tidak ada data pendaftar yang cocok dengan pencarian.</td>
                           </tr>
                         ) : (
                           registrations.filter(r => (r.name || "").toLowerCase().includes((searchQuery || "").toLowerCase()) || (r.nik || "").includes(searchQuery || ""))
@@ -2570,6 +2575,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               <td className="p-4 font-black text-slate-100">{(reg.name || "").toUpperCase()}</td>
                               <td className="p-4 font-mono font-semibold text-slate-300">{reg.nik}</td>
                               <td className="p-4 font-semibold text-slate-300">{reg.kabKota}</td>
+                              <td className="p-4 font-mono font-semibold text-amber-400 text-center">
+                                {reg.bankAccount ? `Bank Nagari - ${reg.bankAccount}` : "-"}
+                              </td>
                               <td className="p-4 text-center text-emerald-400 font-extrabold">
                                 {settings.allowanceAmount !== undefined && settings.allowanceAmount !== 0 ? (
                                   `Rp ${settings.allowanceAmount.toLocaleString("id-ID")},-`

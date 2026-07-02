@@ -198,6 +198,7 @@ export default function App() {
   const [formColor, setFormColor] = useState("#0F6251"); // Default Emerald/Teal
   const [formKtp, setFormKtp] = useState("");
   const [formGender, setFormGender] = useState("Laki-laki");
+  const [formBankAccount, setFormBankAccount] = useState("");
   const [isSelfieMode, setIsSelfieMode] = useState(false);
 
   // Signature states and refs for registration form
@@ -436,6 +437,7 @@ export default function App() {
         bimtekTitle: activeEventTitle,
         bimtekId: activeEventId,
         gender: formGender,
+        bankAccount: formBankAccount.trim(),
       };
 
       await dbService.addRegistration(newReg);
@@ -1137,6 +1139,23 @@ export default function App() {
                               rows={2}
                               className="w-full px-3 py-2 rounded-lg border border-gray-200 text-slate-900 focus:outline-none focus:border-emerald-500 text-sm font-semibold resize-none"
                             />
+                          </div>
+
+                          {/* Rekening Bank Input */}
+                          <div className="space-y-1">
+                            <label className="text-xs font-bold text-gray-700 uppercase">Nomor Rekening (Bank Nagari)</label>
+                            <div className="flex">
+                              <span className="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-200 bg-gray-50 text-gray-500 text-sm font-bold">
+                                Bank Nagari
+                              </span>
+                              <input
+                                type="text"
+                                value={formBankAccount}
+                                onChange={(e) => setFormBankAccount(e.target.value)}
+                                placeholder="Masukkan no rekening..."
+                                className="w-full px-3 py-2.5 rounded-none rounded-r-lg border border-gray-200 text-slate-900 focus:outline-none focus:border-emerald-500 text-sm font-semibold"
+                              />
+                            </div>
                           </div>
 
                           {/* Signature Pad */}
