@@ -956,13 +956,17 @@ export default function App() {
                             <p className="text-xs text-slate-500 leading-relaxed">
                               {settings?.isCertificateFeatureDisabled 
                                 ? "Silakan Cari / Ambil Kartu Peserta Anda di sini! Cari menggunakan NIK atau No. WhatsApp Anda. Unduh kartu pengenal fisik kegiatan Anda." 
-                                : "Silakan Cari / Ambil Sertifikat Anda di sini! Cari menggunakan NIK atau No. WhatsApp Anda. Unduh kartu pengenal fisik atau dapatkan berkas Sertifikat Bimtek resmi jika sudah dirilis Admin."}
+                                : (settings?.isCertificateReleased 
+                                    ? "Sertifikat telah dirilis! Silakan unduh Sertifikat Bimtek resmi Anda di sini menggunakan NIK atau No. WhatsApp."
+                                    : "Unduh kartu pengenal peserta Anda. Untuk sertifikat: Sertifikat belum tersedia. Peserta diwajibkan untuk mengikuti keseluruhan bimtek terlebih dahulu.")}
                             </p>
                           </div>
                         </div>
                         <div className="mt-8">
                           <span className="inline-block px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-2xl group-hover:shadow-lg shadow-indigo-600/10 transition-all">
-                            {settings?.isCertificateFeatureDisabled ? "Silakan Cari \u203a" : "Silakan Cari / Ambil Sertifikat \u203a"}
+                            {settings?.isCertificateFeatureDisabled 
+                              ? "Silakan Cari \u203a" 
+                              : "Cari Kartu Peserta & Sertifikat \u203a"}
                           </span>
                         </div>
                       </div>
@@ -1229,11 +1233,17 @@ export default function App() {
                     {/* Search Panel Card */}
                     <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
                       <div>
-                        <h2 className="text-base sm:text-lg font-black text-slate-900">{settings?.isCertificateFeatureDisabled ? "Silakan Cari Kartu Peserta" : "Silakan Cari / Ambil Sertifikat & Kartu Peserta"}</h2>
+                        <h2 className="text-base sm:text-lg font-black text-slate-900">
+                          {settings?.isCertificateFeatureDisabled 
+                            ? "Silakan Cari Kartu Peserta" 
+                            : "Cari Kartu Peserta & Sertifikat"}
+                        </h2>
                         <p className="text-xs text-slate-500">
                           {settings?.isCertificateFeatureDisabled 
                             ? "Masukkan 16 digit nomor NIK (KTP) atau nomor handphone/WhatsApp Anda yang sudah didaftarkan untuk menampilkan kartu peserta kegiatan Anda." 
-                            : "Masukkan 16 digit nomor NIK (KTP) atau nomor handphone/WhatsApp Anda yang sudah didaftarkan untuk menampilkan kartu peserta dan mengunduh Sertifikat Resmi kegiatan Anda."}
+                            : (settings?.isCertificateReleased 
+                                ? "Masukkan 16 digit nomor NIK (KTP) atau nomor handphone/WhatsApp Anda yang sudah didaftarkan untuk mengunduh Sertifikat Resmi kegiatan Anda."
+                                : "Masukkan 16 digit nomor NIK (KTP) atau nomor handphone/WhatsApp Anda yang sudah didaftarkan untuk menampilkan kartu peserta kegiatan. Sertifikat belum tersedia, peserta diwajibkan untuk mengikuti keseluruhan bimtek terlebih dahulu.")}
                         </p>
                       </div>
  
@@ -1252,7 +1262,11 @@ export default function App() {
                           className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-505 active:scale-95 text-white text-xs sm:text-sm font-bold rounded-xl transition-all shadow-md flex items-center justify-center space-x-1.5 shrink-0"
                         >
                           <Smartphone className="w-4 h-4" />
-                          <span>{settings?.isCertificateFeatureDisabled ? "Cari Kartu Peserta" : "Cari Kartu & Sertifikat"}</span>
+                          <span>
+                            {settings?.isCertificateFeatureDisabled 
+                              ? "Cari Kartu Peserta" 
+                              : "Cari Kartu & Sertifikat"}
+                          </span>
                         </button>
                       </form>
 
@@ -1267,11 +1281,17 @@ export default function App() {
                     {searchedParticipant ? (
                       <div className="bg-white rounded-2xl border border-slate-100 p-6 sm:p-8 shadow-sm animate-fade-in">
                         <div className="text-center mb-6 space-y-1.5">
-                          <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">{settings?.isCertificateFeatureDisabled ? "Kartu Peserta" : "Kartu Peserta dan Sertifikat"}</h2>
+                          <h2 className="text-lg sm:text-xl font-extrabold text-slate-900">
+                            {settings?.isCertificateFeatureDisabled 
+                              ? "Kartu Peserta" 
+                              : "Kartu Peserta & Sertifikat"}
+                          </h2>
                           <p className="text-xs sm:text-sm text-slate-500">
                             {settings?.isCertificateFeatureDisabled 
                               ? "Berikut adalah kartu identitas resmi kegiatan Anda. Simpan gambar kartu di bawah ini." 
-                              : "Berikut adalah kartu identitas resmi dan opsi unduh sertifikat bimtek Anda. Simpan gambar kartu atau unduh berkas sertifikat di bawah ini."}
+                              : (settings?.isCertificateReleased 
+                                  ? "Berikut adalah kartu identitas resmi dan opsi unduh sertifikat bimtek Anda. Simpan gambar kartu atau unduh berkas sertifikat di bawah ini."
+                                  : "Berikut adalah kartu identitas resmi kegiatan Anda. Untuk sertifikat, peserta diwajibkan untuk mengikuti keseluruhan bimtek terlebih dahulu.")}
                           </p>
                         </div>
                         {(() => {

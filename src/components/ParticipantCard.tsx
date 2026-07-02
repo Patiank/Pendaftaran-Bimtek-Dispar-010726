@@ -420,7 +420,7 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = ({
             </button>
           ) : (
             <div className="w-full py-3 px-4 rounded-2xl bg-amber-500/5 border border-amber-500/10 text-center text-[11px] sm:text-xs text-amber-600 font-semibold leading-relaxed">
-              🔒 Sertifikat Bimtek digital Anda masih diproses / belum diterbitkan oleh Admin. Silakan ikuti seluruh rangkaian materi kegiatan.
+              🔒 Sertifikat belum tersedia. Peserta diwajibkan untuk mengikuti keseluruhan bimtek terlebih dahulu.
             </div>
           )
         )}
