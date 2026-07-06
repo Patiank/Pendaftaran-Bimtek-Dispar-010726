@@ -16,7 +16,7 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
   registrations,
 }) => {
   const [inputValue, setInputValue] = useState("");
-  const [selectedDay, setSelectedDay] = useState(2); // Starts from Day 2 as requested
+  const [selectedDay, setSelectedDay] = useState(1); // Starts from Day 2 as requested
   const [showScanModal, setShowScanModal] = useState(false);
   const [participant, setParticipant] = useState<Registration | null>(null);
   
@@ -46,13 +46,13 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
   };
 
   // If duration is set to 1 day only, attendance is not needed since day 1 is represented by register
-  const availableDaysCount = Math.max(0, durationDays - 1);
+  const availableDaysCount = durationDays;
 
   return (
     <div id="attendance-form-card" className="w-full max-w-md mx-auto bg-white rounded-2xl border border-slate-100 p-6 shadow-xl animate-fade-in">
       <div className="text-center mb-6">
         <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Presensi Harian</h2>
-        <p className="text-xs sm:text-sm text-gray-500 mt-1">Acara hari ke-2 dan selanjutnya</p>
+        <p className="text-xs sm:text-sm text-gray-500 mt-1">Silakan mengisi absensi Anda</p>
       </div>
 
       <AnimatePresence mode="wait">
@@ -137,7 +137,7 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
                   </label>
                   <div className="grid grid-cols-4 gap-2">
                     {Array.from({ length: availableDaysCount }).map((_, idx) => {
-                      const dayNum = idx + 2;
+                      const dayNum = idx + 1;
                       return (
                         <button
                           key={`att-day-btn-${dayNum}`}

@@ -319,7 +319,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [showCertRevokeSuccess, setShowCertRevokeSuccess] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [showPrintQrModal, setShowPrintQrModal] = useState(false);
-  const [selectedQrDay, setSelectedQrDay] = useState(2);
+  const [selectedQrDay, setSelectedQrDay] = useState(1);
 
   // Edit states for settings
   const [eventTitle, setEventTitle] = useState(settings.eventTitle || "");
@@ -1884,12 +1884,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               </td>
                               {/* Render empty cells for physical signing by participants as requested */}
                                 {Array.from({ length: settings.durationDays || 3 }).map((_, i) => {
-                                  const dayAtt = i > 0 ? attendance.find(a => 
+                                  const dayAtt = attendance.find(a => 
                                     a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` || 
                                     (((a.nik === reg.nik && !!reg.nik) || (a.name === reg.name)) && a.day === i + 1)
-                                  ) : null;
+                                  );
                                   
-                                  const sigSrc = i === 0 ? reg.signatureBase64 : dayAtt?.signatureBase64;
+                                  const sigSrc = dayAtt?.signatureBase64;
                                 
                                 return (
                                   <td key={`presence-day-cell-${reg.id || idx}-${i}`} className="p-1 border border-black h-16 relative align-top w-32 bg-white text-center">
@@ -2410,13 +2410,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 <div className="text-[10px] text-slate-400 font-mono mt-1">NIK: {reg.nik} | Telp: {reg.phone || "-"}</div>
                               </td>
                               {Array.from({ length: settings.durationDays || 3 }).map((_, i) => {
-                                const dayAtt = i > 0 ? attendance.find(a => 
+                                const dayAtt = attendance.find(a => 
                                   a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` || 
                                   (((a.nik === reg.nik && !!reg.nik) || (a.name === reg.name)) && a.day === i + 1)
-                                ) : null;
+                                );
                                 
-                                const sigSrc = i === 0 ? reg.signatureBase64 : dayAtt?.signatureBase64;
-                                const attId = i > 0 ? dayAtt?.id : null;
+                                const sigSrc = dayAtt?.signatureBase64;
+                                const attId = dayAtt?.id;
                                 
                                 return (
                                   <td key={`att-cell-${reg.id}-${i}`} className="p-2 align-middle">
@@ -4814,8 +4814,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                 onChange={(e) => setSelectedQrDay(Number(e.target.value))}
                 className="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-1.5 focus:outline-none"
               >
-                {Array.from({ length: Math.max(0, (settings.durationDays || 3) - 1) }).map((_, idx) => (
-                  <option key={idx} value={idx + 2}>Hari ke-{idx + 2}</option>
+                {Array.from({ length: Math.max(0, settings.durationDays || 3) }).map((_, idx) => (
+                  <option key={idx} value={idx + 1}>Hari ke-{idx + 1}</option>
                 ))}
               </select>
             </div>
