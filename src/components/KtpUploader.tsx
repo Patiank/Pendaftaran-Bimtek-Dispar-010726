@@ -13,7 +13,7 @@ interface KtpUploaderProps {
     gender?: string;
     isSelfie?: boolean;
   }) => void;
-  onError: (msg: string) => void;
+  onError: (msg: string, base64?: string) => void;
   onModeChange?: (mode: "ktp" | "selfie") => void;
 }
 
@@ -139,7 +139,8 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
 
       try {
         setStatusMessage("Mengoptimalkan ukuran gambar...");
-        const compressedBase64 = await compressImage(originalBase64);
+        let compressedBase64 = "";
+        compressedBase64 = await compressImage(originalBase64);
         setPreview(compressedBase64);
 
         if (uploadMode === "selfie") {
@@ -158,9 +159,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
           setStatusMessage("Mengekstrak data dari KTP...");
           
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => {
-            controller.abort();
-          }, 10000); // 10 seconds timeout
+          const timeoutId = setTimeout(() => { controller.abort(); }, 60000); // 60 seconds timeout
 
           try {
             const response = await fetch("/api/scan-ktp", {
@@ -211,15 +210,15 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
           } catch (fetchErr: any) {
             clearTimeout(timeoutId);
             if (fetchErr.name === "AbortError") {
-              throw new Error("Waktu pemindaian KTP melebihi batas 10 detik. Sistem mempersilakan Anda mengisi formulir pendaftaran secara langsung secara manual.");
+              throw new Error("Waktu pemindaian KTP melebihi batas 60 detik. Sistem mempersilakan Anda mengisi formulir pendaftaran secara langsung secara manual.");
             }
             throw fetchErr;
           }
         }
       } catch (err: any) {
         console.error("OCR parse exception:", err);
-        onError(err?.message || "Koneksi terputus saat memproses gambar. Silakan coba kembali.");
-        setPreview(null);
+        onError(err?.message || "Koneksi terputus saat memproses gambar. Silakan coba kembali.", compressedBase64 || undefined);
+        if (!compressedBase64) setPreview(null);
       } finally {
         setLoading(false);
         setStatusMessage("");

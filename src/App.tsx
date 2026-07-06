@@ -1031,13 +1031,22 @@ export default function App() {
                               // Optional: you can clear existing values if switching back and forth
                             }}
                             onScanComplete={handleKtpScanned}
-                            onError={(msg) => {
+                            onError={(msg, base64) => {
                               setGlobalError(msg);
-                              setFormNik("");
-                              setFormName("");
-                              setFormAddress("");
-                              setFormKabKota("");
-                              setFormKtp("");
+                              // We DO NOT clear NIK, Name, Address if the user wants to keep filling
+                              // Wait, the OCR failed, we might want to let them keep what they typed OR just not clear it
+                              // Actually, the old code clears it. We can leave clearing or not clearing.
+                              // Since OCR failed, any partially filled stuff might be good to preserve
+                              // Let's just preserve Ktp.
+                              if (base64) {
+                                setFormKtp(base64);
+                              } else {
+                                setFormKtp("");
+                                setFormNik("");
+                                setFormName("");
+                                setFormAddress("");
+                                setFormKabKota("");
+                              }
                             }}
                           />
                         </div>
