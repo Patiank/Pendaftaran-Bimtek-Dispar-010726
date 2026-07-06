@@ -136,10 +136,9 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
     const reader = new FileReader();
     reader.onload = async (e) => {
       const originalBase64 = e.target?.result as string;
-
+      let compressedBase64 = "";
       try {
         setStatusMessage("Mengoptimalkan ukuran gambar...");
-        let compressedBase64 = "";
         compressedBase64 = await compressImage(originalBase64);
         setPreview(compressedBase64);
 
@@ -159,7 +158,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
           setStatusMessage("Mengekstrak data dari KTP...");
           
           const controller = new AbortController();
-          const timeoutId = setTimeout(() => { controller.abort(); }, 60000); // 60 seconds timeout
+          const timeoutId = setTimeout(() => { controller.abort(); }, 120000); // 120 seconds timeout
 
           try {
             const response = await fetch("/api/scan-ktp", {
@@ -210,7 +209,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
           } catch (fetchErr: any) {
             clearTimeout(timeoutId);
             if (fetchErr.name === "AbortError") {
-              throw new Error("Waktu pemindaian KTP melebihi batas 60 detik. Sistem mempersilakan Anda mengisi formulir pendaftaran secara langsung secara manual.");
+              throw new Error("Waktu pemindaian KTP melebihi batas 120 detik. Sistem mempersilakan Anda mengisi formulir pendaftaran secara langsung secara manual.");
             }
             throw fetchErr;
           }

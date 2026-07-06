@@ -104,7 +104,80 @@ app.post("/api/scan-ktp", async (req, res) => {
     return res.json(parsedData);
   } catch (error: any) {
     console.error("OCR scanning error:", error);
-    return res.status(500).json({ error: error?.message || "Failed to parse KTP identity verification data" });
+    let errMsg = error?.message || "Gagal memproses KTP.";
+    if (errMsg.includes("503") || errMsg.includes("high demand") || errMsg.includes("UNAVAILABLE")) {
+      errMsg = "Sistem OCR saat ini sedang sibuk. Silakan isi form pendaftaran secara manual di bawah ini, foto KTP Anda sudah tersimpan.";
+    }
+    return res.status(500).json({ error: errMsg });
+  }
+});
+
+
+app.post("/api/generate-report", async (req, res) => {
+  try {
+    const { settings, stats, locations, rundownBase64, mimeType, additionalInfo } = req.body;
+    
+    if (!ai) {
+      return res.status(500).json({ error: "Sistem AI tidak tersedia. Pastikan GEMINI_API_KEY telah disetel." });
+    }
+
+    const cleanBase64 = rundownBase64 ? rundownBase64.replace(/^data:.*?;base64,/, "") : "";
+    const cleanMimeType = mimeType || "image/jpeg";
+
+    const promptText = `
+      Anda adalah asisten pembuat Laporan Resmi Kegiatan (Bimtek) yang sangat profesional.
+      Tugas Anda adalah membuat laporan yang sangat detail, panjang, komprehensif, dan jelas.
+      Buatkan teks laporan pelaksanaan kegiatan untuk acara berikut:
+      - Nama Kegiatan: ${settings.eventTitle}
+      - Tanggal: ${settings.startDate} (Durasi ${settings.durationDays} hari)
+      - Lokasi: ${settings.location}
+      - PPTK/Kepala Bidang: ${settings.kepalaBidangName} (NIP: ${settings.kepalaBidangNip})
+      
+      Informasi Tambahan Penting:
+      ${additionalInfo || "Tidak ada informasi tambahan."}
+      
+      Data Peserta:
+      - Total Peserta: ${stats.total} orang
+      - Laki-laki: ${stats.male} orang
+      - Perempuan: ${stats.female} orang
+      - Distribusi Daerah (Kab/Kota): ${JSON.stringify(locations)}
+
+      Tugas Anda:
+      Berdasarkan gambar/dokumen rundown kegiatan yang dilampirkan dan informasi tambahan di atas, rangkum secara detail pelaksanaan kegiatan dari hari ke hari dengan bahasa yang resmi, formal, dan mudah dipahami.
+      Jelaskan secara naratif pelaksanaan agenda tersebut secara mendalam (misalnya pembukaan, rincian materi yang disampaikan, hingga penutupan).
+      Sertakan juga penjelasan bahwa peserta telah mengikuti kegiatan dengan baik, dan peserta melakukan absensi mandiri dengan melakukan scan barcode yang telah disiapkan oleh panitia pada setiap hari bimtek dilaksanakan.
+      
+      Format Output:
+      Keluarkan output dalam format HTML (tanpa tag <html> atau <body>, cukup menggunakan tag <h3>, <p>, <ul>, <li>, <strong>, <br>) agar siap dirender di aplikasi web. 
+      Jangan gunakan markdown html blocks. Kembalikan raw HTML string saja.
+    `;
+
+    const contents = [];
+    if (cleanBase64) {
+      contents.push({
+        inlineData: {
+          mimeType: cleanMimeType,
+          data: cleanBase64,
+        },
+      });
+    }
+    contents.push({ text: promptText });
+
+    const response = await ai.models.generateContent({
+      model: "gemini-3.5-flash",
+      contents,
+      config: {
+        responseMimeType: "text/plain",
+      }
+    });
+
+    let htmlContent = response.text || "<p>Gagal menyusun laporan.</p>";
+    htmlContent = htmlContent.replace(/```html/g, "").replace(/```/g, "");
+
+    return res.json({ htmlContent });
+  } catch (error: any) {
+    console.error("AI Report generation error:", error);
+    return res.status(500).json({ error: error?.message || "Gagal menyusun laporan dengan AI" });
   }
 });
 

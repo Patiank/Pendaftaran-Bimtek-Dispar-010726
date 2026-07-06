@@ -30,6 +30,7 @@ import {
   Maximize
 } from "lucide-react";
 import { Registration, Attendance, AppSettings } from "../types";
+import { AiReportTab } from "./AiReportTab";
 import { ParticipantCard } from "./ParticipantCard";
 import { BarcodeGenerator } from "./BarcodeGenerator";
 import { motion, AnimatePresence } from "motion/react";
@@ -2403,7 +2404,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                         filteredRegistrants.slice(attendancePage * REGISTRANTS_PER_PAGE, (attendancePage + 1) * REGISTRANTS_PER_PAGE).map((reg, idx) => {
                           const globalIdx = registrations.findIndex(r => r.id === reg.id);
                           return (
-                            <tr key={`att-reg-row-${reg.id}`} className="hover:bg-slate-800/30 text-white">
+                            <tr key={`att-reg-row-${reg.id || ""}-${idx}`} className="hover:bg-slate-800/30 text-white">
                               <td className="p-4 font-mono text-slate-500 text-center">{globalIdx + 1}</td>
                               <td className="p-4">
                                 <div className="font-bold text-slate-100">{reg.name.toUpperCase()}</div>
@@ -2419,7 +2420,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 const attId = dayAtt?.id;
                                 
                                 return (
-                                  <td key={`att-cell-${reg.id}-${i}`} className="p-2 align-middle">
+                                  <td key={`att-cell-${reg.id || ""}-${idx}-${i}`} className="p-2 align-middle">
                                     {sigSrc ? (
                                       <div className="bg-white rounded-lg p-1 w-full border border-white/10 h-14 flex items-center justify-center relative group">
                                         {sigSrc === "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" ? (
@@ -3353,6 +3354,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   </>
                 </div>
               )}
+
+            {activeTab === "ai-report" && (
+              <AiReportTab
+                registrations={registrations}
+                attendance={attendance}
+                settings={settings}
+              />
+            )}
 
             {activeTab === "settings" && (
               <div className="space-y-8 animate-fade-in">

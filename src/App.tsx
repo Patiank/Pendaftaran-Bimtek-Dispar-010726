@@ -68,7 +68,7 @@ export default function App() {
   const [isAdminAuthorized, setIsAdminAuthorized] = useState(() => {
     return safeStorage.getItem("admin_authorized_v2") === "true";
   });
-  const [activeAdminTab, setActiveAdminTab] = useState<"stats" | "registrants" | "attendance" | "settings" | "allowance" | "certificates">("stats");
+  const [activeAdminTab, setActiveAdminTab] = useState<"stats" | "registrants" | "attendance" | "settings" | "allowance" | "certificates" | "ai-report">("stats");
 
   const handleTabChange = (tab: ActiveTab) => {
     if (activeTab === "admin" && tab !== "admin") {
@@ -840,6 +840,7 @@ export default function App() {
                     { id: "attendance", label: "Tabel Kehadiran (Absensi)", icon: CheckSquare },
                     { id: "allowance", label: "Penerimaan Uang Saku", icon: Award },
                     { id: "certificates", label: "Cetak & Kirim Sertifikat", icon: CheckCircle },
+                    { id: "ai-report", label: "Laporan Kegiatan (AI)", icon: FileText },
                     { id: "settings", label: "Pengaturan Bimtek", icon: Sliders },
                   ].filter(tab => {
                     const isSuper = safeStorage.getItem("admin_is_super") === "true";
