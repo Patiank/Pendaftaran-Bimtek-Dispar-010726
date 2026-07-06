@@ -233,18 +233,6 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = ({
             boxShadow: cardTemplateBase64 ? "none" : "inset 0 0 80px rgba(0,0,0,0.15)",
           }}
         >
-          {registrationIndex !== undefined && (
-            <div
-              className="absolute top-4 right-4 font-mono font-bold text-[10px] px-2 py-1 rounded-md z-10"
-              style={{
-                backgroundColor: isBgDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)",
-                color: textColor
-              }}
-            >
-              NO. {String(registrationIndex).padStart(3, "0")}
-            </div>
-          )}
-
           {/* MINANGKABAU EMBOSSED STYLE HEADERS */}
           {!cardTemplateBase64 && (
             <div className="absolute inset-0 pointer-events-none overflow-hidden opacity-10">
@@ -279,15 +267,22 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = ({
                   <Award className="w-6 h-6" style={{ color: isBgDark ? "#fde047" : "#047857" }} />
                 </div>
                 <div>
-                  <h4 className="text-[10px] uppercase tracking-widest font-semibold" style={{ color: labelColor, ...textStrokeStyle }}>
-                    PESERTA
-                  </h4>
                   <p className="text-xs font-bold font-sans" style={{ color: textColor, ...textStrokeStyle }}>
                     DISPAR SUMBAR
                   </p>
                 </div>
               </div>
-              <Compass className="w-6 h-6 animate-spin-slow" style={{ color: isBgDark ? "rgba(255,255,255,0.4)" : "rgba(4, 120, 87, 0.4)" }} />
+              {registrationIndex !== undefined && (
+                <div
+                  className="font-mono font-bold text-lg px-3 py-1.5 rounded-md z-10 shadow-sm"
+                  style={{
+                    backgroundColor: isBgDark ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)",
+                    color: textColor
+                  }}
+                >
+                  NO. {String(registrationIndex).padStart(3, "0")}
+                </div>
+              )}
             </div>
 
             {/* EVENT TITLE & LOCATION */}

@@ -21,7 +21,8 @@ import {
   Award,
   Sliders,
   Database,
-  AlertTriangle
+  AlertTriangle,
+  Scan
 } from "lucide-react";
 import { Registration, Attendance, AppSettings, ActiveTab } from "./types";
 import { dbService, getFirestoreQuotaExceeded, forceSetOfflineMode } from "./services/dbService";
@@ -158,7 +159,7 @@ export default function App() {
   const [searchedParticipant, setSearchedParticipant] = useState<Registration | null>(null);
   const [searchConducted, setSearchConducted] = useState(false);
   const [searchError, setSearchError] = useState("");
-
+  
   const runCardSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setSearchError("");
@@ -197,7 +198,7 @@ export default function App() {
   const [formKabKota, setFormKabKota] = useState("");
   const [formColor, setFormColor] = useState("#0F6251"); // Default Emerald/Teal
   const [formKtp, setFormKtp] = useState("");
-  const [formGender, setFormGender] = useState("Laki-laki");
+  const [formGender, setFormGender] = useState("");
   const [formBankAccount, setFormBankAccount] = useState("");
   const [isSelfieMode, setIsSelfieMode] = useState(false);
 
@@ -357,11 +358,11 @@ export default function App() {
   const handleManualRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const needsNik = !isSelfieMode;
-    if ((needsNik && !formNik) || !formName || !formPhone) {
+    if ((needsNik && !formNik) || !formName || !formPhone || !formGender) {
       if (needsNik) {
-        setGlobalError("Harap lengkapi NIK, Nama Lengkap, dan No. HP / WhatsApp.");
+        setGlobalError("Harap lengkapi NIK, Nama Lengkap, Jenis Kelamin, dan No. HP / WhatsApp.");
       } else {
-        setGlobalError("Harap lengkapi Nama Lengkap dan No. HP / WhatsApp.");
+        setGlobalError("Harap lengkapi Nama Lengkap, Jenis Kelamin, dan No. HP / WhatsApp.");
       }
       return;
     }
@@ -471,7 +472,7 @@ export default function App() {
       setFormKabKota("");
       setFormColor("#0F6251");
       setFormKtp("");
-      setFormGender("Laki-laki");
+      setFormGender("");
       setIsSelfieMode(false);
       clearRegCanvas();
       
@@ -1025,6 +1026,10 @@ export default function App() {
                           </div>
                           
                           <KtpUploader
+                            onModeChange={(mode) => {
+                              setIsSelfieMode(mode === "selfie");
+                              // Optional: you can clear existing values if switching back and forth
+                            }}
                             onScanComplete={handleKtpScanned}
                             onError={(msg) => {
                               setGlobalError(msg);
@@ -1300,7 +1305,7 @@ export default function App() {
                           const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
                           const computedNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
                           return (
-                            <ParticipantCard
+                              <ParticipantCard
                               registration={searchedParticipant}
                               eventTitle={settings.eventTitle}
                               eventLocation={settings.eventLocation}
@@ -1345,8 +1350,8 @@ export default function App() {
                           const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
                           const computedNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
                           return (
-                            <ParticipantCard
-                              registration={recentRegistration}
+                              <ParticipantCard
+                                  registration={recentRegistration}
                               eventTitle={settings.eventTitle}
                               eventLocation={settings.eventLocation}
                               cardTemplateBase64={settings.cardTemplateBase64}

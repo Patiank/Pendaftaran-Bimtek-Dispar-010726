@@ -14,6 +14,7 @@ interface KtpUploaderProps {
     isSelfie?: boolean;
   }) => void;
   onError: (msg: string) => void;
+  onModeChange?: (mode: "ktp" | "selfie") => void;
 }
 
 const compressImage = (
@@ -96,7 +97,7 @@ const compressImage = (
   });
 };
 
-export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onError }) => {
+export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onError, onModeChange }) => {
   const [dragActive, setDragActive] = useState(false);
   const [preview, setPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -272,7 +273,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
       <div id="ktp-uploader-switcher" className="flex border border-gray-100 mb-5 p-1 bg-slate-100 rounded-2xl">
         <button
           type="button"
-          onClick={() => { if (!loading) { setUploadMode("ktp"); setPreview(null); } }}
+          onClick={() => { if (!loading) { setUploadMode("ktp"); setPreview(null); onModeChange?.("ktp"); } }}
           disabled={loading}
           className={`flex-1 flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
             uploadMode === "ktp"
@@ -284,7 +285,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
         </button>
         <button
           type="button"
-          onClick={() => { if (!loading) { setUploadMode("selfie"); setPreview(null); } }}
+          onClick={() => { if (!loading) { setUploadMode("selfie"); setPreview(null); onModeChange?.("selfie"); } }}
           disabled={loading}
           className={`flex-1 flex items-center justify-center space-x-2 py-2.5 px-3 rounded-xl text-xs font-bold transition-all ${
             uploadMode === "selfie"

@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+const fs = require('fs');
+let code = `import React, { useState, useEffect } from "react";
 import { CheckCircle2, AlertTriangle, Info } from "lucide-react";
 import { Registration, Attendance } from "../types";
 import { motion, AnimatePresence } from "motion/react";
@@ -29,8 +30,8 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
     
     if (cleanVal.length >= 3) {
       newParticipant = registrations.find((reg) => {
-        const cleanValDigits = cleanVal.replace(/\D/g, "");
-        const matchNik = reg.nik && cleanValDigits !== "" && reg.nik.replace(/\D/g, "").includes(cleanValDigits);
+        const cleanValDigits = cleanVal.replace(/\\D/g, "");
+        const matchNik = reg.nik && cleanValDigits !== "" && reg.nik.replace(/\\D/g, "").includes(cleanValDigits);
         const matchPhone = reg.phone && cleanValDigits !== "" && reg.phone.replace(/[^0-9]/g, "").includes(cleanValDigits);
         const matchName = reg.name && reg.name.toLowerCase().includes(cleanVal.toLowerCase());
         return matchNik || matchPhone || matchName;
@@ -51,7 +52,7 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
   return (
     <div id="attendance-form-card" className="w-full max-w-md mx-auto bg-white rounded-2xl border border-slate-100 p-6 shadow-xl animate-fade-in">
       <div className="text-center mb-6">
-        <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Presensi Harian</h2>
+        <h2 className="text-lg sm:text-xl font-extrabold text-gray-900 tracking-tight">Presensi Susulan</h2>
         <p className="text-xs sm:text-sm text-gray-500 mt-1">Acara hari ke-2 dan selanjutnya</p>
       </div>
 
@@ -130,42 +131,15 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
             </div>
 
             {participant && (
-              <div className="space-y-4 pt-2">
-                <div className="space-y-2">
-                  <label className="text-xs font-bold text-gray-700 uppercase tracking-wider block">
-                    Pilih Hari Kehadiran
-                  </label>
-                  <div className="grid grid-cols-4 gap-2">
-                    {Array.from({ length: availableDaysCount }).map((_, idx) => {
-                      const dayNum = idx + 2;
-                      return (
-                        <button
-                          key={`att-day-btn-${dayNum}`}
-                          type="button"
-                          onClick={() => setSelectedDay(dayNum)}
-                          className={`py-2 px-1 rounded-lg text-xs font-bold border transition-all ${
-                            selectedDay === dayNum
-                              ? "bg-emerald-600 border-emerald-600 text-white shadow-md shadow-emerald-600/10"
-                              : "bg-slate-50 border-gray-100 text-gray-700 hover:bg-slate-100 hover:border-gray-200"
-                          }`}
-                        >
-                          H-{dayNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="button"
-                    onClick={() => setShowScanModal(true)}
-                    className="w-full py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl flex items-center justify-center space-x-3 active:scale-[0.98] transition-all shadow-xl shadow-slate-900/20"
-                  >
-                    <Scan className="w-6 h-6 text-emerald-400" />
-                    <span className="text-base">Scan Barcode H-{selectedDay}</span>
-                  </button>
-                </div>
+              <div className="pt-4">
+                <button
+                  type="button"
+                  onClick={() => setShowScanModal(true)}
+                  className="w-full py-4 bg-slate-900 hover:bg-black text-white font-black rounded-2xl flex items-center justify-center space-x-3 active:scale-[0.98] transition-all shadow-xl shadow-slate-900/20"
+                >
+                  <Scan className="w-6 h-6 text-emerald-400" />
+                  <span className="text-base">Scan Barcode Absensi</span>
+                </button>
               </div>
             )}
           </form>
@@ -175,7 +149,6 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
       {showScanModal && participant && (
         <ScanAttendance
           participant={participant}
-          expectedDay={selectedDay}
           onClose={() => setShowScanModal(false)}
           onSuccess={(day) => {
             setShowScanModal(false);
@@ -191,3 +164,5 @@ export const AttendanceForm: React.FC<AttendanceFormProps> = ({
     </div>
   );
 };
+`
+fs.writeFileSync('src/components/AttendanceForm.tsx', code);

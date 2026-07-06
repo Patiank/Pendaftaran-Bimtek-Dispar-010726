@@ -8,7 +8,7 @@ import {
   Sliders,
   Settings,
   FileSpreadsheet,
-  Printer,
+  Printer, Scan,
   Trash2,
   Calendar,
   Search,
@@ -33,6 +33,7 @@ import { Registration, Attendance, AppSettings } from "../types";
 import { ParticipantCard } from "./ParticipantCard";
 import { BarcodeGenerator } from "./BarcodeGenerator";
 import { motion, AnimatePresence } from "motion/react";
+import { QRCodeSVG } from "qrcode.react";
 import { dbService } from "../services/dbService";
 import { safeStorage } from "../utils/safeStorage";
 import { generateCertificateImage } from "../utils/certHelper";
@@ -317,6 +318,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   const [showCertRevokeConfirm, setShowCertRevokeConfirm] = useState(false);
   const [showCertRevokeSuccess, setShowCertRevokeSuccess] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [showPrintQrModal, setShowPrintQrModal] = useState(false);
+  const [selectedQrDay, setSelectedQrDay] = useState(2);
 
   // Edit states for settings
   const [eventTitle, setEventTitle] = useState(settings.eventTitle || "");
@@ -2335,6 +2338,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     >
                       <Printer className="w-4 h-4" />
                       <span>Cetak Tabel Absensi</span>
+                    </button>
+                    <button
+                      onClick={() => setShowPrintQrModal(true)}
+                      className="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-black rounded-xl transition-all shadow-md flex items-center space-x-1.5 active:scale-95 cursor-pointer"
+                    >
+                      <Scan className="w-4 h-4" />
+                      <span>Cetak QR Absensi</span>
                     </button>
                   </div>
                 </div>
@@ -4758,6 +4768,113 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       )}
 
       {/* 4. CUSTOM POPUP MODAL: SUCCESS REVOKE CERTIFICATE */}
+      
+      {/* 5. MODAL CETAK QR CODE ABSENSI */}
+      {showPrintQrModal && (
+        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-700 text-white rounded-3xl w-full max-w-md p-6 relative shadow-2xl animate-fade-in text-center space-y-5">
+            <button
+              onClick={() => setShowPrintQrModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white bg-slate-800 rounded-full transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+            <div className="space-y-2 pt-2">
+              <h3 className="text-lg font-black text-white">Cetak QR Code Absensi</h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                Pilih hari untuk men-generate barcode yang dapat discan oleh peserta untuk mencatat kehadirannya secara mandiri.
+              </p>
+            </div>
+            
+            <div className="flex items-center justify-center space-x-2 py-4">
+              <span className="text-xs font-bold text-slate-400">Pilih Hari:</span>
+              <select
+                value={selectedQrDay}
+                onChange={(e) => setSelectedQrDay(Number(e.target.value))}
+                className="bg-slate-800 border border-slate-700 text-white text-xs rounded-lg px-3 py-1.5 focus:outline-none"
+              >
+                {Array.from({ length: Math.max(0, (settings.durationDays || 3) - 1) }).map((_, idx) => (
+                  <option key={idx} value={idx + 2}>Hari ke-{idx + 2}</option>
+                ))}
+              </select>
+            </div>
+
+            <div id="print-qr-area" className="bg-white p-6 rounded-2xl mx-auto inline-block border-4 border-slate-200">
+              <QRCodeSVG 
+                value={`ABSEN_DAY_${selectedQrDay}`} 
+                size={220} 
+                level="H" 
+                includeMargin={false} 
+              />
+              <div className="mt-4 text-center">
+                <h4 className="text-slate-900 font-black text-xl tracking-tight uppercase">ABSENSI HARI {selectedQrDay}</h4>
+                <p className="text-slate-500 font-bold text-xs uppercase tracking-wider">{settings.eventTitle}</p>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <button
+                type="button"
+                onClick={async () => {
+                  const element = document.getElementById("print-qr-area");
+                  if (!element) return;
+                  const originalGetComputedStyle = window.getComputedStyle;
+                  try {
+                    // Override getComputedStyle to filter out oklch and oklab colors for html2canvas compatibility
+                    window.getComputedStyle = function (elt, pseudoElt) {
+                      const style = originalGetComputedStyle.call(window, elt, pseudoElt);
+                      
+                      const safeColor = (value) => {
+                        if (typeof value === "string" && (value.includes("oklch") || value.includes("oklab"))) {
+                          if (value.includes("/")) {
+                            const parts = value.split("/");
+                            const alphaAttr = parts[parts.length - 1].replace(")", "").trim();
+                            const alpha = parseFloat(alphaAttr);
+                            return isNaN(alpha) ? "rgba(0,0,0,0)" : `rgba(71, 85, 105, ${alpha})`;
+                          }
+                          return "rgb(71, 85, 105)"; // Fallback slate-500
+                        }
+                        return value;
+                      };
+
+                      return new Proxy(style, {
+                        get(target, prop) {
+                          const value = target[prop];
+                          if (typeof value === "function") {
+                            const originalMethod = value;
+                            return function (...args) {
+                              const result = originalMethod.apply(target, args);
+                              return safeColor(result);
+                            };
+                          }
+                          return safeColor(value);
+                        },
+                      });
+                    };
+
+                    const { default: html2canvas } = await import("html2canvas");
+                    const canvas = await html2canvas(element, { scale: 4, backgroundColor: "#ffffff" });
+                    const dataUrl = canvas.toDataURL("image/png");
+                    const link = document.createElement("a");
+                    link.download = `QR_Absensi_Hari_${selectedQrDay}.png`;
+                    link.href = dataUrl;
+                    link.click();
+                  } catch (err) {
+                    console.error("Failed to download QR", err);
+                  } finally {
+                    window.getComputedStyle = originalGetComputedStyle;
+                  }
+                }}
+                className="flex-1 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition-all cursor-pointer outline-none flex items-center justify-center space-x-2"
+              >
+                <Download className="w-4 h-4" />
+                <span>Download Barcode</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showCertRevokeSuccess && (
         <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-[99999] flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-700 text-white rounded-3xl w-full max-w-md p-6 relative shadow-2xl animate-fade-in text-center space-y-5">
