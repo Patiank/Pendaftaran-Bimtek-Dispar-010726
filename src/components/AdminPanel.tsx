@@ -1728,7 +1728,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   /* PRINT TYPE: REGISTRANTS TABLE */
                   <table className="w-full text-left border-collapse border border-black text-[10px]">
                     <thead>
-                      <tr className="border-b border-black bg-slate-100 font-bold">
+                      <tr className="border-b border-black bg-transparent font-bold">
                         <th className="p-2 border border-black w-8">No</th>
                         <th className="p-2 border border-black">Nama Lengkap</th>
                         <th className="p-2 border border-black">NIK</th>
@@ -1771,7 +1771,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </tbody>
                     {registrations.length > 0 && (
                       <tfoot>
-                        <tr className="bg-slate-50 font-bold border-t border-black text-[10px]">
+                        <tr className="bg-transparent font-bold border-t border-black text-[10px]">
                           <td colSpan={6} className="p-2 border border-black text-right uppercase tracking-wider">Total Peserta Terdaftar:</td>
                           <td className="p-2 border border-black text-center font-black">{registrations.length} Orang</td>
                         </tr>
@@ -1782,7 +1782,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   /* PRINT TYPE: ALLOWANCE TABLE WITH BLANK SIGNATURE COLS FOR MANUAL SIGNING */
                   <table className="w-full text-left border-collapse border border-black text-[10px]">
                     <thead>
-                      <tr className="border-b border-black bg-slate-100 font-bold">
+                      <tr className="border-b border-black bg-transparent font-bold">
                         <th className="p-2 border border-black w-8">No</th>
                         <th className="p-2 border border-black">Nama Lengkap</th>
                         <th className="p-2 border border-black">NIK</th>
@@ -1829,7 +1829,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </tbody>
                     {registrations.length > 0 && (
                       <tfoot>
-                        <tr className="bg-slate-50 font-bold border-t border-black text-[10px]">
+                        <tr className="bg-transparent font-bold border-t border-black text-[10px]">
                           <td colSpan={5} className="p-2 border border-black text-right uppercase tracking-wider">Total Penerima:</td>
                           <td className="p-2 border border-black text-center font-black">{registrations.length} Orang</td>
                           <td className="p-2 border border-black text-center font-black">
@@ -1845,7 +1845,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   /* PRINT TYPE: ATTENDANCE TABLE WITH SIGNATURE PREVIEWS CONSIDERING ALL DAYS AND PRE-EXISTING REGISTERED LIST */
                   <table className="w-full text-left border-collapse border border-black text-[10px]">
                     <thead>
-                      <tr className="border-b border-black bg-slate-100 font-bold">
+                      <tr className="border-b border-black bg-transparent font-bold">
                         <th className="p-2 border border-black w-8">No</th>
                         <th className="p-2 border border-black">Nama Lengkap</th>
                         <th className="p-2 border border-black">NIK</th>
@@ -1886,7 +1886,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                 {Array.from({ length: settings.durationDays || 3 }).map((_, i) => {
                                   const dayAtt = i > 0 ? attendance.find(a => 
                                     a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` || 
-                                    (reg.nik && a.nik === reg.nik && a.day === i + 1)
+                                    (((a.nik === reg.nik && !!reg.nik) || (a.name === reg.name)) && a.day === i + 1)
                                   ) : null;
                                   
                                   const sigSrc = i === 0 ? reg.signatureBase64 : dayAtt?.signatureBase64;
@@ -1895,7 +1895,18 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   <td key={`presence-day-cell-${reg.id || idx}-${i}`} className="p-1 border border-black h-16 relative align-top w-32 bg-white text-center">
                                     <span className="text-[7.5px] text-gray-400 font-bold absolute top-1 left-1.5">{idx + 1}.</span>
                                     {sigSrc && (
-                                      <img src={sigSrc} alt="ttd" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-h-12 max-w-full opacity-80" />
+                                      sigSrc === "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" ? (
+                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full">
+                                          <span className="text-[10px] font-bold text-gray-800 block">✓ Hadir</span>
+                                          <span className="text-[8px] text-gray-600 block">Scan Barcode</span>
+                                          
+                                        </div>
+                                      ) : (
+                                        <>
+                                          <img src={sigSrc} alt="ttd" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-h-12 max-w-full opacity-80" />
+                                          
+                                        </>
+                                      )
                                     )}
                                   </td>
                                 );
@@ -1907,7 +1918,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </tbody>
                     {registrations.length > 0 && (
                       <tfoot>
-                        <tr className="bg-slate-50 font-bold border-t border-black text-[10px]">
+                        <tr className="bg-transparent font-bold border-t border-black text-[10px]">
                           <td colSpan={6} className="p-2 border border-black text-right uppercase tracking-wider">Total Peserta Terdaftar:</td>
                           <td colSpan={settings.durationDays || 3} className="p-2 border border-black text-center font-black">{registrations.length} Orang</td>
                         </tr>
@@ -2000,7 +2011,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                const runningDay = selectedStatsDay !== null ? selectedStatsDay : defaultRunningDay;
                
                const activeDayAttendanceUniqueCount = new Set(
-                 attendance.filter(a => a.day === runningDay).map(a => (a.nik || "").trim().toLowerCase())
+                 attendance.filter(a => a.day === runningDay).map(a => (a.nik || a.name || a.id).trim().toLowerCase())
                ).size;
  
                return (
@@ -2401,7 +2412,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                               {Array.from({ length: settings.durationDays || 3 }).map((_, i) => {
                                 const dayAtt = i > 0 ? attendance.find(a => 
                                   a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` || 
-                                  (reg.nik && a.nik === reg.nik && a.day === i + 1)
+                                  (((a.nik === reg.nik && !!reg.nik) || (a.name === reg.name)) && a.day === i + 1)
                                 ) : null;
                                 
                                 const sigSrc = i === 0 ? reg.signatureBase64 : dayAtt?.signatureBase64;
@@ -2411,11 +2422,21 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   <td key={`att-cell-${reg.id}-${i}`} className="p-2 align-middle">
                                     {sigSrc ? (
                                       <div className="bg-white rounded-lg p-1 w-full border border-white/10 h-14 flex items-center justify-center relative group">
-                                        <img
-                                          src={sigSrc}
-                                          alt={`Tanda tangan hari ${i+1}`}
-                                          className="max-w-full max-h-full object-contain mix-blend-multiply opacity-90"
-                                        />
+                                        {sigSrc === "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" ? (
+                                          <div className="text-center w-full">
+                                            <span className="text-[10px] font-bold text-teal-600 block">✓ Hadir (Scan)</span>
+                                            
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <img
+                                              src={sigSrc}
+                                              alt={`Tanda tangan hari ${i+1}`}
+                                              className="max-w-full max-h-full object-contain mix-blend-multiply opacity-90"
+                                            />
+                                            
+                                          </>
+                                        )}
                                         {i > 0 && attId && (
                                           <div className="absolute inset-0 bg-slate-900/90 rounded-lg opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity duration-200">
                                             {deleteAttConfirmId === attId ? (
