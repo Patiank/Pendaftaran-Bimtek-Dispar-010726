@@ -6,13 +6,14 @@ import { dbService } from "../services/dbService";
 import { Registration, Attendance } from "../types";
 
 interface ScanAttendanceProps {
+  signatureBase64?: string;
   participant: Registration;
   expectedDay?: number;
   onClose: () => void;
   onSuccess: (day: number) => void;
 }
 
-export const ScanAttendance: React.FC<ScanAttendanceProps> = ({ participant, expectedDay, onClose, onSuccess }) => {
+export const ScanAttendance: React.FC<ScanAttendanceProps> = ({ participant, expectedDay, signatureBase64, onClose, onSuccess }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [successDay, setSuccessDay] = useState<number | null>(null);
@@ -39,7 +40,7 @@ export const ScanAttendance: React.FC<ScanAttendanceProps> = ({ participant, exp
             nik: participant.nik,
             name: participant.name,
             day: day,
-            signatureBase64: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=", // Blank 1x1 transparent PNG for signature placeholder
+            signatureBase64: signatureBase64 || "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
             attendedAt: new Date().toISOString(),
             bimtekTitle: participant.bimtekTitle || "",
             bimtekId: participant.bimtekId || "",
