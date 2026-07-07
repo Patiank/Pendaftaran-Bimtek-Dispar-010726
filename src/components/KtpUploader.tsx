@@ -279,7 +279,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
               : "text-gray-500 hover:text-gray-700 hover:bg-slate-200/50"
           } ${loading && "opacity-50 cursor-not-allowed"}`}
         >
-          <span>📸 Scan KTP Otomatis</span>
+          <span>📸 Foto KTP (Tanpa Scan)</span>
         </button>
         <button
           type="button"
@@ -365,7 +365,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
                 </p>
                 <p className="text-xs text-gray-500 mt-1 max-w-sm leading-relaxed">
                   {uploadMode === "ktp"
-                    ? "Silakan pilih opsi pengambilan foto KTP di bawah ini untuk memulai pengisian data secara otomatis."
+                    ? "Silakan unggah foto KTP Anda sebagai kelengkapan identitas."
                     : "Peserta tidak membawa KTP? Tidak masalah! Ambil foto selfie atau unggah pasfoto profil sebagai identitas visual Anda."}
                 </p>
               </div>
@@ -411,7 +411,7 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
               </div>
               <div className="space-y-2">
                 <p className="text-base font-bold text-emerald-800 animate-pulse">
-                  {uploadMode === "ktp" ? "Menganalisis Dokumen..." : "Memproses Foto Anda..."}
+                  {uploadMode === "ktp" ? "Menyimpan Dokumen..." : "Memproses Foto Anda..."}
                 </p>
                 <p className="text-xs text-gray-600 max-w-xs">
                   {statusMessage}

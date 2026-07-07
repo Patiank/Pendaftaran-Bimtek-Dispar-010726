@@ -348,7 +348,7 @@ export default function App() {
         setFormGender(data.gender);
       }
       setGlobalError("");
-      setGlobalSuccess("Data KTP berhasil diekstraksi ke formulir secara otomatis!");
+      setGlobalSuccess("Foto KTP berhasil disimpan! Silakan lengkapi data diri Anda secara manual.");
     }
     setTimeout(() => {
       setGlobalSuccess("");
@@ -704,7 +704,7 @@ export default function App() {
         {/* Top Information Success/Error banners */}
         <AnimatePresence>
           {isQuotaExceeded && (
-            <motion.div
+            <motion.div key="quota-error"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -734,7 +734,7 @@ export default function App() {
           )}
 
           {globalError && (
-            <motion.div
+            <motion.div key="global-error"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -749,7 +749,7 @@ export default function App() {
           )}
 
           {globalSuccess && (
-            <motion.div
+            <motion.div key="global-success"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
@@ -1023,7 +1023,7 @@ export default function App() {
                         <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm space-y-4">
                           <div>
                             <h2 className="text-base sm:text-lg font-extrabold text-gray-900">Identitas Visual</h2>
-                            <p className="text-xs text-slate-500">Scan KTP secara otomatis atau gunakan Foto Selfie jika tidak membawa KTP</p>
+                            <p className="text-xs text-slate-500">Unggah foto KTP atau gunakan Foto Selfie sebagai kelengkapan identitas</p>
                           </div>
                           
                           <KtpUploader
