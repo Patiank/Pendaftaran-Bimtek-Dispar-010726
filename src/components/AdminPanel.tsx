@@ -4829,7 +4829,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
               </select>
             </div>
 
-            <div id="print-qr-area" className="bg-white p-6 rounded-2xl mx-auto inline-block border-4 border-slate-200">
+            <div id="print-qr-area" className="bg-white p-6 rounded-2xl mx-auto inline-flex flex-col items-center border-4 border-slate-200">
               <QRCodeSVG 
                 value={`ABSEN_DAY_${selectedQrDay}`} 
                 size={220} 
