@@ -233,7 +233,7 @@ export const AiReportTab: React.FC<AiReportTabProps> = ({
             </button>
           </div>
 
-          <div id="ai-report-content" className="bg-white p-10 sm:p-16 rounded-2xl shadow-xl border border-slate-200 max-w-4xl mx-auto space-y-8 text-slate-800">
+          <div className="overflow-x-auto bg-gray-100/50 p-4"><div id="ai-report-content" className="bg-white px-[20mm] py-[25mm] shadow-xl border border-slate-200 w-[210mm] min-h-[297mm] mx-auto space-y-8 text-slate-800 box-border text-sm leading-relaxed">
             {/* Kop Laporan / Header */}
             <div className="text-center border-b-2 border-slate-800 pb-6 space-y-2">
               <h1 className="text-2xl font-black uppercase tracking-wider">Laporan Pelaksanaan Kegiatan</h1>
@@ -326,6 +326,7 @@ export const AiReportTab: React.FC<AiReportTabProps> = ({
               </div>
             </div>
 
+          </div>
           </div>
         </div>
       )}

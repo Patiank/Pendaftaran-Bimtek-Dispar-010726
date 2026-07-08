@@ -155,64 +155,17 @@ export const KtpUploader: React.FC<KtpUploaderProps> = ({ onScanComplete, onErro
             isSelfie: true,
           });
         } else {
-          setStatusMessage("Mengekstrak data dari KTP...");
-          
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => { controller.abort(); }, 120000); // 120 seconds timeout
-
-          try {
-            const response = await fetch("/api/scan-ktp", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({
-                base64: compressedBase64,
-                mimeType: "image/jpeg",
-              }),
-              signal: controller.signal,
-            });
-
-            clearTimeout(timeoutId);
-
-            let data: any = {};
-            const responseText = await response.text();
-            try {
-              data = JSON.parse(responseText);
-            } catch (jsonErr) {
-              console.error("Failed to parse OCR response as JSON:", responseText);
-              throw new Error("Gagal memproses gambar KTP. Server mengembalikan format tak valid (HTML). Silakan coba ketik data secara manual pada formulir.");
-            }
-
-            if (!response.ok) {
-              throw new Error(data.error || "Gagal memproses gambar KTP");
-            }
-
-            setStatusMessage("Menganalisis profil data...");
-
-            // Check if OCR yielded results or returned empty
-            if (!data.nik || !data.name) {
-              throw new Error("Gagal mendeteksi NIK atau Nama secara otomatis. Silakan masukkan data Anda secara langsung pada formulir pendaftaran.");
-            }
-
-            // Successfully scanned KTP
-            onScanComplete({
-              nik: data.nik,
-              name: data.name,
-              address: data.address || "",
-              kabKota: data.kabKota || "",
-              color: data.color || "#0F6251", // Fallback color
-              gender: data.gender || "Laki-laki",
-              ktpBase64: compressedBase64,
-              isSelfie: false,
-            });
-          } catch (fetchErr: any) {
-            clearTimeout(timeoutId);
-            if (fetchErr.name === "AbortError") {
-              throw new Error("Waktu pemindaian KTP melebihi batas 120 detik. Sistem mempersilakan Anda mengisi formulir pendaftaran secara langsung secara manual.");
-            }
-            throw fetchErr;
-          }
+          setStatusMessage("Menyimpan foto KTP...");
+          // No OCR, just return the compressed image
+          onScanComplete({
+            nik: "",
+            name: "",
+            address: "",
+            kabKota: "",
+            color: "#0F6251",
+            ktpBase64: compressedBase64,
+            isSelfie: false,
+          });
         }
       } catch (err: any) {
         console.error("OCR parse exception:", err);

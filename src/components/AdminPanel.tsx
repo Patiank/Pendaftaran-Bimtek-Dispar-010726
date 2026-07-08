@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   Lock,
   Unlock,
@@ -1321,6 +1321,23 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       (r.kabKota || "").toLowerCase().includes((searchQuery || "").toLowerCase())
   );
 
+  const totalValidAttendance = useMemo(() => {
+    return filteredRegistrants.reduce((total, reg) => {
+      let count = 0;
+      for (let i = 0; i < (settings.durationDays || 3); i++) {
+        const dayAtt = attendance.find(a => 
+           a.id === `${(reg.nik || "").trim() ? (reg.nik || "").trim() : reg.id}_day_${i + 1}` ||
+           (((a.nik === reg.nik && !!reg.nik) || (a.name === reg.name)) && a.day === i + 1)
+        );
+        if (dayAtt?.signatureBase64) {
+          count++;
+        }
+      }
+      return total + count;
+    }, 0);
+  }, [filteredRegistrants, attendance, settings.durationDays]);
+
+
   const filteredAttendance = attendance.filter((a) => {
     const regMatch = registrations.find((r) => (r.nik || "") === (a.nik || ""));
     const phone = regMatch ? (regMatch.phone || "") : "";
@@ -1893,22 +1910,20 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                                   const sigSrc = dayAtt?.signatureBase64;
                                 
                                 return (
-                                  <td key={`presence-day-cell-${reg.id || idx}-${i}`} className="p-1 border border-black h-16 relative align-top w-32 bg-white text-center">
-                                    <span className="text-[7.5px] text-gray-400 font-bold absolute top-1 left-1.5">{idx + 1}.</span>
-                                    {sigSrc && (
-                                      sigSrc === "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" ? (
-                                        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center w-full">
-                                          <span className="text-[10px] font-bold text-gray-800 block">✓ Hadir</span>
-                                          <span className="text-[8px] text-gray-600 block">Scan Barcode</span>
-                                          
-                                        </div>
-                                      ) : (
-                                        <>
-                                          <img src={sigSrc} alt="ttd" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-h-12 max-w-full opacity-80" />
-                                          
-                                        </>
-                                      )
-                                    )}
+                                  <td key={`presence-day-cell-${reg.id || idx}-${i}`} className="p-0 border border-black h-16 relative w-32 bg-white align-middle">
+                                    <span className="text-[7.5px] text-gray-400 font-bold absolute top-1 left-1.5 z-10">{idx + 1}.</span>
+                                    <div className="w-full h-full flex items-center justify-center absolute inset-0 p-1">
+                                      {sigSrc && (
+                                        sigSrc === "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=" ? (
+                                          <div className="text-center w-full">
+                                            <span className="text-[10px] font-bold text-gray-800 block">✓ Hadir</span>
+                                            <span className="text-[8px] text-gray-600 block">Scan Barcode</span>
+                                          </div>
+                                        ) : (
+                                          <img src={sigSrc} alt="ttd" className="max-h-12 max-w-[90%] object-contain opacity-90 mix-blend-multiply" />
+                                        )
+                                      )}
+                                    </div>
                                   </td>
                                 );
                               })}
@@ -2512,7 +2527,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     <span>Menampilkan <strong>{filteredRegistrants.length}</strong> dari <strong>{registrations.length}</strong> peserta</span>
                   </div>
                   <div className="text-sm font-bold text-slate-200">
-                    Total Log Kehadiran: <span className="text-teal-400 font-black text-base ml-1">{attendance.length}</span> rekam paraf
+                    Total Log Kehadiran: <span className="text-teal-400 font-black text-base ml-1">{totalValidAttendance}</span> rekam paraf
                   </div>
                 </div>
               </div>

@@ -338,11 +338,11 @@ export default function App() {
       setGlobalSuccess("Foto Selfie berhasil disimpan! Silakan lengkapi data diri Anda pada formulir di samping secara manual.");
     } else {
       setIsSelfieMode(false);
-      setFormNik(data.nik);
-      setFormName(data.name);
-      setFormAddress(data.address);
-      setFormKabKota(data.kabKota);
-      setFormColor(data.color);
+      if (data.nik) setFormNik(data.nik);
+      if (data.name) setFormName(data.name);
+      if (data.address) setFormAddress(data.address);
+      if (data.kabKota) setFormKabKota(data.kabKota);
+      if (data.color) setFormColor(data.color);
       setFormKtp(data.ktpBase64);
       if (data.gender) {
         setFormGender(data.gender);
@@ -1043,10 +1043,6 @@ export default function App() {
                                 setFormKtp(base64);
                               } else {
                                 setFormKtp("");
-                                setFormNik("");
-                                setFormName("");
-                                setFormAddress("");
-                                setFormKabKota("");
                               }
                             }}
                           />
@@ -1137,7 +1133,7 @@ export default function App() {
                           <div className="space-y-1">
                             <label className="text-xs font-bold text-gray-700 uppercase flex items-center justify-between">
                               <span>Kabupaten/Kota/Instansi</span>
-                              <span className="text-[10px] text-gray-400 font-normal normal-case">Prefill otomatis via KTP</span>
+                              
                             </label>
                             <input
                               type="text"
