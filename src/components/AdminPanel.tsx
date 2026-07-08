@@ -1,3 +1,4 @@
+import { logoSumbarBase64 } from "../assets/logoSumbar";
 import React, { useState, useEffect, useMemo } from "react";
 import {
   Lock,
@@ -1631,9 +1632,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
           {/* PRINTABLE DOKUMEN CONTAINER FOR PDF GENERATION */}
           <div id="print-content-area" className="bg-white text-black font-sans max-w-4xl mx-auto p-4 md:p-8 print:p-0">
-            {/* Header (Tanpa Logo) */}
-            <div className="border-b-4 border-double border-black pb-4 mb-6 text-center">
-              <div>
+            {/* Header (Dengan Logo) */}
+            <div className="border-b-4 border-double border-black pb-4 mb-6 flex items-center justify-between px-2 sm:px-8">
+              <div className="w-16 sm:w-20 shrink-0">
+                <img src={logoSumbarBase64} alt="Logo Sumbar" className="w-full h-auto object-contain" />
+              </div>
+              <div className="flex-1 text-center px-4">
                 <h1 className="text-sm sm:text-lg font-bold tracking-wide uppercase text-black">
                   Pemerintah Provinsi Sumatera Barat
                 </h1>
@@ -1644,6 +1648,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <p>Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat</p>
                   <p>Telp. (0751) 7055183</p>
                 </div>
+              </div>
+              <div className="w-16 sm:w-20 shrink-0">
+                {/* Kosong untuk menyeimbangkan flexbox supaya teks benar-benar di tengah */}
               </div>
             </div>
 
