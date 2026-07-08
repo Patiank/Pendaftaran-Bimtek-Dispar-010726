@@ -3636,6 +3636,60 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </p>
                   </div>
 
+
+                  {/* SISTEM BOOKING WAKTU TUNGGAL */}
+                  {isSuperAdmin && (
+                  <div className="bg-slate-800/20 border border-white/5 p-6 rounded-2xl mb-6 shadow-sm">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      <div>
+                        <h4 className="text-sm font-bold uppercase tracking-wider flex items-center gap-2" style={{ color: settings.isAppLocked ? "#f87171" : "#34d399" }}>
+                          {settings.isAppLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
+                          Status Ruang Kerja: {settings.isAppLocked ? "TERKUNCI" : "TERSEDIA"}
+                        </h4>
+                        <p className="text-xs text-slate-400 mt-2 leading-relaxed max-w-2xl">
+                          Sistem ini menerapkan prinsip "Waktu Tunggal" untuk mencegah bentrok penggunaan antar bidang/dinas.
+                          {settings.isAppLocked 
+                            ? ` Saat ini aplikasi sedang digunakan oleh bidang/dinas yang mengunci. Harap jangan mengubah pengaturan dasar (seperti instansi atau lokasi) kecuali sesi kegiatan telah selesai. Dikunci sejak: ${settings.lockedAt ? new Date(settings.lockedAt).toLocaleString('id-ID') : '-'}` 
+                            : " Aplikasi saat ini tersedia dan siap digunakan untuk kegiatan/event baru. Kunci aplikasi untuk mengamankan sesi Anda."}
+                        </p>
+                      </div>
+                      <div>
+                        {settings.isAppLocked ? (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              await onSaveSettings({
+                                ...settings,
+                                isAppLocked: false,
+                                lockedByDepartment: "",
+                                lockedAt: ""
+                              });
+                            }}
+                            className="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-red-400 border border-red-500/30 rounded-lg text-sm font-bold transition-all whitespace-nowrap shadow-sm active:scale-95"
+                          >
+                            Buka Kunci Sesi (Selesai)
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              await onSaveSettings({
+                                ...settings,
+                                isAppLocked: true,
+                                lockedByDepartment: departmentName,
+                                lockedAt: new Date().toISOString()
+                              });
+                            }}
+                            className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-bold transition-all whitespace-nowrap shadow-lg shadow-emerald-900/20 active:scale-95"
+                          >
+                            Mulai & Kunci Sesi
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  )}
+
                   <form onSubmit={handleSaveSettings} className="space-y-6 max-w-xl bg-slate-800/10 border border-white/5 p-6 rounded-2xl animate-fade-in">
                   {/* Judul acara */}
                   <div className="space-y-2">
