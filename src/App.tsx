@@ -111,7 +111,7 @@ export default function App() {
           const sorted = [...registrations].sort((a, b) => new Date(a.registeredAt).getTime() - new Date(b.registeredAt).getTime());
           const idx = sorted.findIndex(r => r.id === verifiedCertParticipant.id);
           const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
-          const computedNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
+          const computedNo = `Nomor: 556/BIMTEK-${settings?.departmentShortName || "DISPAR"}/SDK/${numStr}/2026`;
 
           const url = await generateCertificateImage({
             participantName: verifiedCertParticipant.name,
@@ -122,6 +122,10 @@ export default function App() {
             startDate: settings.startDate,
             durationDays: settings.durationDays,
             customTemplateBase64: verifiedCertParticipant.certificateBase64 || settings.certificateTemplateBase64 || undefined,
+            departmentName: settings?.departmentName,
+            departmentAddress: settings?.departmentAddress,
+            departmentPhone: settings?.departmentPhone,
+            departmentShortName: settings?.departmentShortName,
             participantId: verifiedCertParticipant.id,
             certificateNo: computedNo,
             certNoX: settings.certNoX,
@@ -625,7 +629,7 @@ export default function App() {
         <div className="flex flex-col items-center space-y-4">
           <div className="w-12 h-12 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin" />
           <p className="text-sm font-semibold text-emerald-800 animate-pulse font-mono">
-            Menginisiasi Panel Dinas Pariwisata Prov. Sumbar...
+            Menginisiasi Panel Admin...
           </p>
         </div>
       </div>
@@ -1139,7 +1143,7 @@ export default function App() {
                               type="text"
                               value={formKabKota}
                               onChange={(e) => setFormKabKota(e.target.value)}
-                              placeholder="Contoh: Kota Padang, Dinas Pariwisata Sumbar..."
+                              placeholder="Contoh: Kota Padang..."
                               className="w-full px-3 py-2.5 rounded-lg border border-gray-200 text-slate-900 focus:outline-none focus:border-emerald-500 text-sm font-semibold"
                             />
                           </div>
@@ -1309,7 +1313,7 @@ export default function App() {
                           const sorted = activeRegistrations;
                           const idx = sorted.findIndex(r => r.id === searchedParticipant.id);
                           const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
-                          const computedNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
+                          const computedNo = `Nomor: 556/BIMTEK-${settings?.departmentShortName || "DISPAR"}/SDK/${numStr}/2026`;
                           return (
                               <ParticipantCard
                               registration={searchedParticipant}
@@ -1354,7 +1358,7 @@ export default function App() {
                           const sorted = activeRegistrations;
                           const idx = sorted.findIndex(r => r.id === recentRegistration.id);
                           const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
-                          const computedNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
+                          const computedNo = `Nomor: 556/BIMTEK-${settings?.departmentShortName || "DISPAR"}/SDK/${numStr}/2026`;
                           return (
                               <ParticipantCard
                                   registration={recentRegistration}
@@ -1511,7 +1515,7 @@ export default function App() {
               {!verificationChecked ? (
                 <div className="py-12 flex flex-col items-center justify-center space-y-4 w-full">
                   <RefreshCw className="w-12 h-12 text-emerald-600 animate-spin" />
-                  <h3 className="text-sm font-bold text-slate-800">Menghubungkan ke Sistem Validasi DISPAR...</h3>
+                  <h3 className="text-sm font-bold text-slate-800">Menghubungkan ke Sistem Validasi {settings?.departmentShortName || "DISPAR"}...</h3>
                   <p className="text-xs text-slate-500">Mencari data sertifikat dalam database pelatihan.</p>
                 </div>
               ) : (
@@ -1528,7 +1532,7 @@ export default function App() {
                       VALIDASI SERTIFIKAT DIGITAL
                     </h2>
                     <p className="text-xs text-slate-500 font-medium">
-                      Dinas Pariwisata Provinsi Sumatera Barat
+                      {settings?.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat"}
                     </p>
                   </div>
 
@@ -1566,7 +1570,7 @@ export default function App() {
                         {isRenderingCertImg ? (
                           <div className="h-48 flex flex-col items-center justify-center space-y-3 bg-slate-100 rounded-xl border border-dashed border-slate-200">
                             <RefreshCw className="w-8 h-8 text-emerald-600 animate-spin" />
-                            <span className="text-xs text-slate-500 font-bold font-mono">Menghubungkan ke secure server DISPAR...</span>
+                            <span className="text-xs text-slate-500 font-bold font-mono">Menghubungkan ke secure server {settings?.departmentShortName || "DISPAR"}...</span>
                           </div>
                         ) : renderedCertImg ? (
                           <div className="space-y-3">
@@ -1609,7 +1613,7 @@ export default function App() {
                               const sorted = activeRegistrations;
                               const idx = sorted.findIndex(r => r.id === verifiedCertParticipant.id);
                               const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
-                              const computedNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
+                              const computedNo = `Nomor: 556/BIMTEK-${settings?.departmentShortName || "DISPAR"}/SDK/${numStr}/2026`;
                               return (
                                 <ParticipantCard
                                   registration={verifiedCertParticipant}
@@ -1648,7 +1652,7 @@ export default function App() {
                     </div>
                   ) : (
                     <div className="bg-red-50 text-red-700 p-4 border border-red-100 rounded-2xl text-xs font-semibold leading-relaxed text-center w-full my-4">
-                      ⚠️ Dokumen Tidak Valid atau Tidak Terdaftar pada Sistem Database Pelatihan Dinas Pariwisata Sumatera Barat. Hubungi Administrator untuk informasi lebih lanjut.
+                      ⚠️ Dokumen Tidak Valid atau Tidak Terdaftar pada Sistem Database Pelatihan {settings?.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat"}. Hubungi Administrator untuk informasi lebih lanjut.
                     </div>
                   )}
                 </>

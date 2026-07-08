@@ -37,6 +37,7 @@ interface ParticipantCardProps {
   isCertQrEnabled?: boolean;
   isCertificateFeatureDisabled?: boolean;
   registrationIndex?: number;
+  departmentShortName?: string;
 }
 
 export const ParticipantCard: React.FC<ParticipantCardProps> = ({
@@ -67,7 +68,8 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = ({
   certQrSize,
   isCertQrEnabled,
   isCertificateFeatureDisabled,
-  registrationIndex
+  registrationIndex,
+  departmentShortName = "DISPAR"
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
 
@@ -268,7 +270,7 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = ({
                 </div>
                 <div>
                   <p className="text-xs font-bold font-sans" style={{ color: textColor, ...textStrokeStyle }}>
-                    DISPAR SUMBAR
+                    {departmentShortName} SUMBAR
                   </p>
                 </div>
               </div>

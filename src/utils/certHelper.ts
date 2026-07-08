@@ -39,6 +39,10 @@ interface CertificateData {
   kabidNip?: string;
   customTemplateBase64?: string;
   participantId?: string;
+  departmentName?: string;
+  departmentAddress?: string;
+  departmentPhone?: string;
+  departmentShortName?: string;
   
   // Custom certificate text positions
   certificateNo?: string;
@@ -89,7 +93,7 @@ export const generateCertificateImage = (data: CertificateData): Promise<string>
 
       targetCtx.font = `bold italic ${noSize}px "Inter", "Courier New", monospace`;
       targetCtx.fillStyle = noColor;
-      targetCtx.fillText(data.certificateNo || "Nomor: 556/BIMTEK-DISPAR/SDK/001/2026", noX, noY);
+      targetCtx.fillText(data.certificateNo || `Nomor: 556/BIMTEK-${data.departmentShortName || "DISPAR"}/SDK/001/2026`, noX, noY);
 
       // 2. DRAW PARTICIPANT NAME
       const nameY = data.certNameY !== undefined ? data.certNameY : 560;
@@ -319,13 +323,13 @@ export const generateCertificateImage = (data: CertificateData): Promise<string>
       // Main agency name
       ctx.fillStyle = "#0d5c3a"; // Dinas Green
       ctx.font = `bold 20px "Inter", "Helvetica", sans-serif`;
-      ctx.fillText("DINAS PARIWISATA PROVINSI SUMATERA BARAT", w / 2, headerY + 42);
+      ctx.fillText((data.departmentName || "DINAS PARIWISATA PROVINSI SUMATERA BARAT").toUpperCase(), w / 2, headerY + 42);
 
       // Address
       ctx.fillStyle = "#475569";
       ctx.font = `italic 14px "Inter", sans-serif`;
-      ctx.fillText("Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat", w / 2, headerY + 70);
-      ctx.fillText("Telp. (0751) 7055183", w / 2, headerY + 90);
+      ctx.fillText(data.departmentAddress || "Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat", w / 2, headerY + 70);
+      ctx.fillText(data.departmentPhone || "Telp. (0751) 7055183", w / 2, headerY + 90);
 
       // Divider Double Line
       ctx.strokeStyle = "#c5a85c";
@@ -387,7 +391,7 @@ export const generateCertificateImage = (data: CertificateData): Promise<string>
       ctx.font = `bold 14px "Inter", sans-serif`;
       ctx.fillText("KEPALA BIDANG", sigX, sigY + 25);
       ctx.font = `bold 9.5px "Inter", sans-serif`;
-      ctx.fillText("DINAS PARIWISATA PROVINSI SUMATERA BARAT", sigX, sigY + 41);
+      ctx.fillText((data.departmentName || "DINAS PARIWISATA PROVINSI SUMATERA BARAT").toUpperCase(), sigX, sigY + 41);
       ctx.fillText("", sigX, sigY + 54);
 
       // Draw static/electronic signed indicator overlay
@@ -403,7 +407,7 @@ export const generateCertificateImage = (data: CertificateData): Promise<string>
       ctx.fillText("☑ TANDA TANGAN ELEKTRONIK", sigX, sigY + 100);
       ctx.fillStyle = "#64748b";
       ctx.font = `font-mono 9px "Courier New", monospace`;
-      ctx.fillText("DISPAR SUMBAR / CERTIFIED-SECURE", sigX, sigY + 122);
+      ctx.fillText(`${data.departmentShortName || "DISPAR"} SUMBAR / CERTIFIED-SECURE`, sigX, sigY + 122);
 
       // Dynamic name of the Authorized Penandatanganan
       const authorizedName = (data.kabidName || "Haris, S.Kom, M.Si").toUpperCase();
@@ -443,7 +447,7 @@ export const generateCertificateImage = (data: CertificateData): Promise<string>
       ctx.textAlign = "center";
       ctx.fillStyle = "#c5a85c";
       ctx.font = `bold 10px "Inter", sans-serif`;
-      ctx.fillText("DISPAR", sealX, sealY - 24);
+      ctx.fillText(data.departmentShortName || "DISPAR", sealX, sealY - 24);
       ctx.font = `bold font-mono 15px sans-serif`;
       ctx.fillText("★ SUMBAR ★", sealX, sealY + 2);
       ctx.font = `bold 10px "Inter", sans-serif`;

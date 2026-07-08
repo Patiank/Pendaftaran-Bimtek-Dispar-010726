@@ -325,6 +325,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
   // Edit states for settings
   const [eventTitle, setEventTitle] = useState(settings.eventTitle || "");
+  const [departmentName, setDepartmentName] = useState(settings.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat");
+  const [departmentShortName, setDepartmentShortName] = useState(settings.departmentShortName || "DISPAR");
+  const [departmentAddress, setDepartmentAddress] = useState(settings.departmentAddress || "Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat");
+  const [departmentPhone, setDepartmentPhone] = useState(settings.departmentPhone || "(0751) 7055183");
   const [durationDays, setDurationDays] = useState(settings.durationDays || 3);
   const [startDate, setStartDate] = useState(settings.startDate || "2026-05-21");
   const [eventLocation, setEventLocation] = useState(settings.eventLocation || "");
@@ -558,6 +562,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
   useEffect(() => {
     if (settings) {
       setEventTitle(settings.eventTitle || "");
+      setDepartmentName(settings.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat");
+      setDepartmentShortName(settings.departmentShortName || "DISPAR");
+      setDepartmentAddress(settings.departmentAddress || "Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat");
+      setDepartmentPhone(settings.departmentPhone || "(0751) 7055183");
       setDurationDays(settings.durationDays || 3);
       setStartDate(settings.startDate || "2026-05-21");
       setEventLocation(settings.eventLocation || "");
@@ -628,6 +636,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
       await dbService.activateBimtekEvent(event);
       // Update local edit form parameters to match new active event
       setEventTitle(event.eventTitle || "");
+      setDepartmentName(event.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat");
+      setDepartmentShortName(event.departmentShortName || "DISPAR");
+      setDepartmentAddress(event.departmentAddress || "Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat");
+      setDepartmentPhone(event.departmentPhone || "(0751) 7055183");
       setDurationDays(event.durationDays || 3);
       setStartDate(event.startDate || "2026-05-21");
       setEventLocation(event.eventLocation || "");
@@ -758,7 +770,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     });
     const idx = sorted.findIndex(r => r.id === participant.id);
     const numStr = idx !== -1 ? String(idx + 1).padStart(3, "0") : "001";
-    const computedCertNo = `Nomor: 556/BIMTEK-DISPAR/SDK/${numStr}/2026`;
+    const computedCertNo = `Nomor: 556/BIMTEK-${settings.departmentShortName || "DISPAR"}/SDK/${numStr}/2026`;
 
     try {
       const url = await generateCertificateImage({
@@ -772,6 +784,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         kabidName: settings.kepalaBidangName,
         kabidNip: settings.kepalaBidangNip,
         customTemplateBase64: participant.certificateBase64 || settings.certificateTemplateBase64 || undefined,
+        departmentName: settings.departmentName,
+        departmentAddress: settings.departmentAddress,
+        departmentPhone: settings.departmentPhone,
+        departmentShortName: settings.departmentShortName,
         participantId: participant.id,
         
         // Pass style positions
@@ -865,6 +881,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
     try {
       await onSaveSettings({
         ...settings,
+        departmentShortName,
+        departmentName,
+        departmentAddress,
+        departmentPhone,
         eventTitle,
         durationDays,
         startDate,
@@ -1164,7 +1184,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
         <!-- HEADER LETTERHEAD -->
         <div style="text-align: center; border-bottom: 3px double #000000; padding-bottom: 12px; margin-bottom: 24px; font-family: sans-serif;">
           <h1 style="font-size: 22px; font-weight: 850; text-transform: uppercase; margin: 0; letter-spacing: 0.5px; color: #000000;">PEMERINTAH PROVINSI SUMATERA BARAT</h1>
-          <h2 style="font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 4px 0 0 0; letter-spacing: 1px; color: #000000;">DINAS PARIWISATA PROVINSI SUMATERA BARAT</h2>
+          <h2 style="font-size: 28px; font-weight: 900; text-transform: uppercase; margin: 4px 0 0 0; letter-spacing: 1px; color: #000000;">{settings.departmentName?.toUpperCase() || "DINAS PARIWISATA PROVINSI SUMATERA BARAT"}</h2>
           <p style="font-size: 13px; margin: 6px 0 0 0; font-weight: 500; color: #334155;">Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat</p>
           <p style="font-size: 13px; margin: 2px 0 0 0; font-weight: 500; color: #334155;">Telp. (0751) 7055183</p>
         </div>
@@ -1259,7 +1279,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
 
         <!-- FOOTER INFO -->
         <div style="margin-top: 24px; border-top: 1px solid #e2e8f0; padding-top: 12px; display: flex; justify-content: space-between; align-items: center; font-size: 10px; color: #94a3b8; box-sizing: border-box; font-family: sans-serif;">
-          <div>Dinas Pariwisata Provinsi Sumatera Barat &copy; 2026</div>
+          <div>{settings.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat"} &copy; 2026</div>
         </div>
       `;
 
@@ -1642,11 +1662,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   Pemerintah Provinsi Sumatera Barat
                 </h1>
                 <h2 className="text-base sm:text-xl font-extrabold tracking-wider uppercase text-black mt-0.5 leading-tight">
-                  Dinas Pariwisata Provinsi Sumatera Barat
+                  {settings.departmentName || "Dinas Pariwisata Provinsi Sumatera Barat"}
                 </h2>
                 <div className="text-[10px] sm:text-xs font-semibold text-black mt-1 leading-snug">
-                  <p>Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat</p>
-                  <p>Telp. (0751) 7055183</p>
+                  <p>{settings.departmentAddress || "Jl. Khatib Sulaiman no.7 Padang - Sumatera Barat"}</p>
+                  <p>{settings.departmentPhone || "Telp. (0751) 7055183"}</p>
                 </div>
               </div>
               <div className="w-16 sm:w-20 shrink-0">
@@ -1690,7 +1710,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                     </div>
                     <div className="text-[10px] tracking-widest font-bold uppercase text-white/80">KARTU PESERTA DIGITAL</div>
                     <h3 className="text-sm font-extrabold mt-1 tracking-tight uppercase leading-tight">{settings.eventTitle}</h3>
-                    <div className="text-[9px] uppercase mt-1 tracking-wider opacity-90">DISPAR SUMBAR</div>
+                    <div className="text-[9px] uppercase mt-1 tracking-wider opacity-90">{settings.departmentShortName || "DISPAR"} SUMBAR</div>
                   </div>
 
                   {/* Content body */}
@@ -3619,6 +3639,55 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   <form onSubmit={handleSaveSettings} className="space-y-6 max-w-xl bg-slate-800/10 border border-white/5 p-6 rounded-2xl animate-fade-in">
                   {/* Judul acara */}
                   <div className="space-y-2">
+                                      <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                      Nama Instansi / Dinas
+                    </label>
+                    <input
+                      type="text"
+                      value={departmentName}
+                      onChange={(e) => setDepartmentName(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    />
+                  </div>
+                  
+                                    <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                      Singkatan Instansi / Dinas
+                    </label>
+                    <input
+                      type="text"
+                      value={departmentShortName}
+                      onChange={(e) => setDepartmentShortName(e.target.value)}
+                      placeholder="Contoh: DISPAR"
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                      Alamat Instansi / Dinas
+                    </label>
+                    <input
+                      type="text"
+                      value={departmentAddress}
+                      onChange={(e) => setDepartmentAddress(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    />
+                  </div>
+                  
+                  <div className="space-y-2">
+                    <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                      No. Telp Instansi / Dinas
+                    </label>
+                    <input
+                      type="text"
+                      value={departmentPhone}
+                      onChange={(e) => setDepartmentPhone(e.target.value)}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-white/10 text-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500"
+                    />
+                  </div>
+
                     <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
                       Nama / Judul Kegiatan Bimtek Official
                     </label>
@@ -4207,6 +4276,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({
                   eventLocation={settings.eventLocation}
                   cardTemplateBase64={settings.cardTemplateBase64}
                   cardTemplateTextColor={settings.cardTemplateTextColor}
+                  departmentShortName={settings.departmentShortName || "DISPAR"}
                   registrationIndex={(function() {
                     const idx = registrations.findIndex(r => r.id === selectedParticipantForCard.id);
                     return idx !== -1 ? idx + 1 : undefined;

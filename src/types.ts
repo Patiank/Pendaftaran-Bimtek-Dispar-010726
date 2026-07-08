@@ -46,6 +46,10 @@ export interface AppSettings {
   targetParticipants?: number;
   isCertificateReleased?: boolean;
   isCertificateFeatureDisabled?: boolean;
+  departmentName?: string;
+  departmentShortName?: string;
+  departmentAddress?: string;
+  departmentPhone?: string;
   cardTemplateTextColor?: "white" | "black";
   // Custom certificate text positions
   certNoX?: number;
