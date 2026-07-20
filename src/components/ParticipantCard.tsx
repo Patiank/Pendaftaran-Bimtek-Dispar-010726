@@ -265,14 +265,7 @@ export const ParticipantCard: React.FC<ParticipantCardProps> = ({
           <div className="relative z-10">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">
-                <div className="p-1.5 rounded-xl" style={{ backgroundColor: isBgDark ? "rgba(255,255,255,0.1)" : "rgba(0,0,0,0.05)" }}>
-                  <Award className="w-6 h-6" style={{ color: isBgDark ? "#fde047" : "#047857" }} />
-                </div>
-                <div>
-                  <p className="text-xs font-bold font-sans" style={{ color: textColor, ...textStrokeStyle }}>
-                    {departmentShortName} SUMBAR
-                  </p>
-                </div>
+                {/* Logo and text removed as requested */}
               </div>
               {registrationIndex !== undefined && (
                 <div
